@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">jetpack</string>
+    <string name="login_screen_show">ברוך הבא ל jetpack</string>
+    <string name="login_button">הרשם</string>
+    <string name="enter_password">הכנס סיסמא</string>
+    <string name="enter_email">הכנס כתובת דוא\'\'ל</string>
 </resources>
