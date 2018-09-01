@@ -107,11 +107,13 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(LoginActivity.this, "Authentication succeded.",
                                     Toast.LENGTH_SHORT).show();
                             user = mAuth.getCurrentUser();
+                            updateUI(user);
                             // updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(LoginActivity.this, "Authentication failed.",
+                            Toast.makeText(LoginActivity.this, "Authentication failed." +
+                                    task.getException().getLocalizedMessage(),
                                     Toast.LENGTH_SHORT).show();
 
                         }
