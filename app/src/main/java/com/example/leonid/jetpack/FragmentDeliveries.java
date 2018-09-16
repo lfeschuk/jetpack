@@ -1,17 +1,17 @@
 package com.example.leonid.jetpack;
 
-import android.content.ClipData;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -20,7 +20,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import Objects.DataBaseManager;
 import Objects.Delivery;
@@ -48,7 +47,7 @@ public class FragmentDeliveries extends Fragment {
         // Inflate the layout for this fragment
         View fragment_view =  inflater.inflate(R.layout.fragment_deliveries, container, false);
 
-        tlv=(TouchListView)fragment_view.findViewById(R.id.touch_listview);
+        tlv=(TouchListView)fragment_view.findViewById(R.id.touch_listview_delivery);
         mDatabase =  FirebaseDatabase.getInstance().getReference("Deliveries");
         mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
@@ -59,6 +58,7 @@ public class FragmentDeliveries extends Fragment {
                     array.add(temp);
                     Log.d(TAG,"Delivery is :  " + temp);
                 }
+                MainActivity.set_title_for_adapter(0,array.size());
                 Log.d(TAG,"Done retrieving Deliveries " + array.size());
                 tlv.setAdapter(adapter);
             }
@@ -77,6 +77,18 @@ public class FragmentDeliveries extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position,
                                     long arg3) {
+                Log.d(TAG,"onTouch");
+                Delivery d = array.get(position);
+                Toast.makeText(getActivity(), "Touch delivery guy: " + d.getIndexString(), Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getActivity(), DeliveryDataActivity.class);
+                Bundle b = new Bundle();
+                Log.d(TAG,"passing index string " + d.getIndexString());
+         //       b.putInt("Delivery_Index", Integer.valueOf(d.getIndexString()) ); //Your i
+
+                b.putString("Delivery_Index",d.getIndexString());
+                intent.putExtras(b); //Put your id to your next Intent
+                startActivity(intent);
+
             }
         });
         return fragment_view;
@@ -109,15 +121,16 @@ public class FragmentDeliveries extends Fragment {
 //    }
 class ListAdapter extends ArrayAdapter<Delivery> {
     ListAdapter() {
-        super(getActivity(), R.layout.adapter_layout, array);
+        super(getActivity(), R.layout.adapter_layout_deliveries, array);
     }
     public View getView(int position, View convertView,
                         ViewGroup parent) {
         View row=convertView;
         if (row==null) {
             LayoutInflater inflater=getLayoutInflater();
-            row=inflater.inflate(R.layout.adapter_layout, parent, false);
+            row=inflater.inflate(R.layout.adapter_layout_deliveries, parent, false);
         }
+       // Log.d(TAG,"Array_ size  is :  " + array.size());
         TextView index_delivery=(TextView)row.findViewById(R.id.index_delivery);
         index_delivery.setText(array.get(position).getIndexString());
         TextView time_of_order=(TextView)row.findViewById(R.id.time_of_order);

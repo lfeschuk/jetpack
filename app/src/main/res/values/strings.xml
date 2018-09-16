@@ -5,4 +5,11 @@
     <string name="enter_password">הכנס סיסמא</string>
     <string name="enter_email">הכנס כתובת דוא\'\'ל</string>
     <string name="delayed_delivery_title">משלוחים דחויים</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="button_sign_delivery_guy">צוות</string>
+    <string name="calculate_route">חשב מסלול</string>
+    <string name="cancel_order">בטל משלוח</string>
+    <string name="change_status">0 סטאטוס</string>
+    <string name="restore_delivery">החזר משלוח</string>
+    <string name="delete_delivery">מחק משלוח</string>
 </resources>

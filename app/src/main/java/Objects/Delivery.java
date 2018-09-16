@@ -1,20 +1,121 @@
 package Objects;
 
 public class Delivery {
-    private Integer index;
-    private String indexString;
-   private String adressTo;
-   private String adressFrom;
-   private String timeInserted;
-   private String prepare_time;
-   private String status;
-   private String comment;
-   private Integer num_of_packets;
-   private String timeTaken;
-   private String timeDeliver;
- //  private DeliveryGuys dGuy;
+
+    private String indexString = "";
+   private String adressTo = "";
+   private String adressFrom = "";
+   private String timeInserted = "";
+   private String prepare_time = "";
+   private String status = "A";
+   private String comment = "";
+   private String num_of_packets = "";
+   private String costumer_phone = "";
+   private String timeTaken = "";
+   private String timeDeliver = "";
+    private String costumerName = "";
+    private String city = "";
+    private String floor = "";
+    private String entrance = "";
+    private String building = "";
+    private String street = "";
+    private String apartment = "";
+    private Boolean is_deleted = false;
+    private String business_name = "";
+    private String delivery_guy_index_assigned = "";
+
+    public String getDelivery_guy_index_assigned() {
+        return delivery_guy_index_assigned;
+    }
+
+    public void setDelivery_guy_index_assigned(String delivery_guy_index_assigned) {
+        this.delivery_guy_index_assigned = delivery_guy_index_assigned;
+    }
+
+    public String getBusiness_name() {
+        return business_name;
+    }
+
+    public void setBusiness_name(String business_name) {
+        this.business_name = business_name;
+    }
+
+    public Boolean getIs_deleted() {
+        return is_deleted;
+    }
+
+    public void setIs_deleted(Boolean is_deleted) {
+        this.is_deleted = is_deleted;
+    }
+
+    public String getApartment() {
+        return apartment;
+    }
+
+    public void setApartment(String apartment) {
+        this.apartment = apartment;
+    }
+
+    public String getStreet() {
+        return street;
+    }
+
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getFloor() {
+        return floor;
+    }
+
+    public void setFloor(String floor) {
+        this.floor = floor;
+    }
+
+    public String getEntrance() {
+        return entrance;
+    }
+
+    public void setEntrance(String entrance) {
+        this.entrance = entrance;
+    }
+
+    public String getBuilding() {
+        return building;
+    }
+
+    public void setBuilding(String building) {
+        this.building = building;
+    }
+
+    //  private DeliveryGuys dGuy;
 
     public Delivery() {
+    }
+
+    public String getCostumerName() {
+        return costumerName;
+    }
+
+    public void setCostumerName(String costumerName) {
+        this.costumerName = costumerName;
+    }
+
+    public String getCostumer_phone() {
+        return costumer_phone;
+    }
+
+    public void setCostumer_phone(String costumer_phone) {
+        this.costumer_phone = costumer_phone;
     }
 
     public String getIndexString() {
@@ -25,8 +126,11 @@ public class Delivery {
         this.indexString = indexString;
     }
 
-    public Delivery(Integer index, String adressTo, String adressFrom, String timeInserted, String status, String comment, int num_of_packets) {
-        this.index = index;
+    public Delivery(Integer index, String adressTo, String adressFrom, String timeInserted, String status, String comment,
+                    String num_of_packets,String costumer_phone,String costumerName,
+                    String city,String floor,String building, String entrance,String street,String apartment,
+                    String business_name,String delivery_guy_index_assigned) {
+
         indexString = index.toString();
         this.adressTo = adressTo;
         this.adressFrom = adressFrom;
@@ -37,13 +141,23 @@ public class Delivery {
         this.prepare_time = "--";
         this.timeTaken = "--" ;
         this.timeDeliver = "--";
+        this.costumer_phone = costumer_phone;
+        this.costumerName = costumerName;
+        this.city = city;
+        this.floor = floor;
+        this.entrance = entrance;
+        this.building = building;
+        this.street = street;
+        this.apartment = apartment;
+        this.business_name = business_name;
+        this.delivery_guy_index_assigned = delivery_guy_index_assigned;
       //  this
     }
 
 public Delivery( Delivery d)
 {
-    this.index = d.getIndex();
-    indexString = d.getIndexString();
+
+    this.indexString = d.getIndexString();
     this.adressTo = d.getAdressTo();
     this.adressFrom = d.getAdressFrom();
     this.timeInserted = d.getTimeInserted();
@@ -53,15 +167,21 @@ public Delivery( Delivery d)
     this.prepare_time = d.getPrepare_time();
     this.timeTaken = d.getTimeTaken() ;
     this.timeDeliver = d.getTimeDeliver();
+    this.costumer_phone = d.getCostumer_phone();
+    this.costumerName = d.getCostumerName();
+    this.building = d.getBuilding();
+    this.floor = d.getFloor();
+    this.entrance = d.getEntrance();
+    this.city = d.getCity();
+    this.street = d.getStreet();
+    this.apartment = d.getApartment();
+    this.business_name = d.getBusiness_name();
+    this.delivery_guy_index_assigned = d.getDelivery_guy_index_assigned();
 
 }
-    public int getIndex() {
-        return index;
-    }
 
-    public void setIndex(int index) {
-        this.index = index;
-    }
+
+
 
     public String getAdressTo() {
         return adressTo;
@@ -103,11 +223,11 @@ public Delivery( Delivery d)
         this.comment = comment;
     }
 
-    public Integer getNum_of_packets() {
+    public String getNum_of_packets() {
         return num_of_packets;
     }
 
-    public void setNum_of_packets(int num_of_packets) {
+    public void setNum_of_packets(String num_of_packets) {
         this.num_of_packets = num_of_packets;
     }
 
