@@ -8,6 +8,6 @@
     android:drawSelectorOnTop="true"
     tlv:normal_height="64dp"
     tlv:expanded_height="20dp"
-    tlv:grabber="@+id/index_delivery"
+    tlv:grabber="@+id/radioGroupDragger"
     tlv:remove_mode="slideRight"
     />

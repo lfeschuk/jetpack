@@ -24,10 +24,12 @@ public  class DataBaseManager {
 
   public  void writeDelivery(Delivery delivery)
     {
+        Log.d(TAG,"writeDelivery deliveryName: " +delivery.getBusiness_name() + " delivery assign guy: " + delivery.getDeliveryGuyName());
         mDatabase.child("Deliveries").child(delivery.getIndexString()).setValue(delivery);
     }
     public  void writeDeliveryGuy(DeliveryGuys deliveryGuys)
     {
+        Log.d(TAG,"writeDeliveryGuy deliveryGuyName: " +deliveryGuys.getName());
         mDatabase.child("Delivery_Guys").child(deliveryGuys.getIndex_string()).setValue(deliveryGuys);
     }
     public void remove_delivery_from_dguy(String index_string_guy, final String index_string_delivery)

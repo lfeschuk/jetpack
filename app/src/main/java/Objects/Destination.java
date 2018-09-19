@@ -10,8 +10,12 @@ public class Destination {
     private String index_string = "";
     private String name_costumer = "";
     private String business_name = "";
+    private double latitude;
+    private double longitude;
 
-    public Destination(String adressTo, String adressFrom, String timeInserted, String timeTaken, String timeDeliver, Boolean is_costumer,String index_string) {
+
+    public Destination(String adressTo, String adressFrom, String timeInserted, String timeTaken, String timeDeliver, Boolean is_costumer,String index_string,
+                       double lati,double longi) {
         this.adressTo = adressTo;
         this.adressFrom = adressFrom;
         this.timeInserted = timeInserted;
@@ -19,6 +23,8 @@ public class Destination {
         this.timeDeliver = timeDeliver;
         this.to_costumer = is_costumer;
         this.index_string = index_string;
+        this.latitude = lati;
+        this.longitude = longi;
     }
     public Destination(Destination d) {
         this.adressTo = d.getAdressTo();
@@ -30,6 +36,8 @@ public class Destination {
         this.index_string = d.getIndex_string();
         this.name_costumer = d.getName_costumer();
         this.business_name = d.getBusiness_name();
+        this.latitude = d.getLatitude();
+        this.longitude = d.getLongitude();
     }
 
     public Destination(Delivery d,Boolean to_costumer)
@@ -43,6 +51,32 @@ public class Destination {
         this.index_string = d.getIndexString();
         this.name_costumer = d.getCostumerName();
         this.business_name = d.getBusiness_name();
+        if (to_costumer)
+        {
+            this.longitude = d.getDest_cord_long();
+            this.latitude = d.getDest_cord_lat();
+        }
+        else
+        {
+            this.longitude = d.getSource_cord_long();
+            this.latitude = d.getSource_cord_lat();
+        }
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 
     public String getBusiness_name() {

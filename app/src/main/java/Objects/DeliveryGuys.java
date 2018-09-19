@@ -9,13 +9,13 @@ public class DeliveryGuys {
     String name = "";
     String timeBeFree = "";
    ArrayList<Delivery> deliveries = new ArrayList<>();
-    int latetude = 0;
-    int longtitude = 0;
+    double latetude = 0;
+    double longtitude = 0;
     String picture = "";
     String index_string = "";
     Boolean is_active = true;
 
-    public DeliveryGuys(String name, String timeBeFree, ArrayList<Delivery> deliveries, int latetude, int longtitude, String picture,String index_string,Boolean is_active) {
+    public DeliveryGuys(String name, String timeBeFree, ArrayList<Delivery> deliveries, double latetude, double longtitude, String picture,String index_string,Boolean is_active) {
         this.name = name;
         this.timeBeFree = timeBeFree;
         if (deliveries != null)
@@ -102,19 +102,19 @@ public class DeliveryGuys {
 
 
 
-    public int getLatetude() {
+    public double getLatetude() {
         return latetude;
     }
 
-    public void setLatetude(int latetude) {
+    public void setLatetude(double latetude) {
         this.latetude = latetude;
     }
 
-    public int getLongtitude() {
+    public double getLongtitude() {
         return longtitude;
     }
 
-    public void setLongtitude(int longtitude) {
+    public void setLongtitude(double longtitude) {
         this.longtitude = longtitude;
     }
 

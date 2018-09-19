@@ -21,12 +21,17 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
+
 import Objects.DataBaseManager;
 import Objects.Delivery;
+import Objects.DeliveryGuys;
+import Objects.Destination;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
@@ -35,6 +40,7 @@ public class DeliveryDataActivity extends AppCompatActivity  implements PopupMen
 {
     DataBaseManager dbm = new DataBaseManager();
      public Delivery clicked_delivery = null;
+     public DeliveryGuys deliveryDuyWithDeletedDelivery = null;
     private  Toolbar toolbar;
     public static final String TAG = "DeliveryDataActivity";
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -53,7 +59,7 @@ public class DeliveryDataActivity extends AppCompatActivity  implements PopupMen
         String delivery_key = b.getString("Delivery_Index");
         Log.d(TAG,"after intent");
         mDatabase =  FirebaseDatabase.getInstance().getReference("Deliveries");
-        mDatabase.child(delivery_key).addValueEventListener(new ValueEventListener() {
+        mDatabase.child(delivery_key).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Delivery temp = new Delivery(dataSnapshot.getValue(Delivery.class));
@@ -274,6 +280,11 @@ public class DeliveryDataActivity extends AppCompatActivity  implements PopupMen
             @Override
             public void onClick(View view) {
                 Log.d(TAG,"send to database " + d.getApartment() +"is deleted " + clicked_delivery.getIs_deleted());
+                if (deliveryDuyWithDeletedDelivery != null)
+                {
+                    dbm.writeDeliveryGuy(deliveryDuyWithDeletedDelivery);
+                    deliveryDuyWithDeletedDelivery = null;
+                }
                 if(d.getIs_deleted())
                 {
                     dbm.deleteDelivery(d);
@@ -282,6 +293,10 @@ public class DeliveryDataActivity extends AppCompatActivity  implements PopupMen
                     dbm.writeDelivery(d);
                 }
                 findViewById(R.id.success_text_buttom).setVisibility(View.VISIBLE);
+                Intent intent = new Intent(DeliveryDataActivity.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
             }
         });
 
@@ -345,6 +360,34 @@ public class DeliveryDataActivity extends AppCompatActivity  implements PopupMen
                 return true;
 
             case R.id.change_status:
+                clicked_delivery.setStatus("A");
+                Query q =  FirebaseDatabase.getInstance().getReference("Delivery_Guys").orderByChild("index_string").equalTo(clicked_delivery.getDelivery_guy_index_assigned());
+                q.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for(DataSnapshot ds : dataSnapshot.getChildren())
+                        {
+                            DeliveryGuys temp = new DeliveryGuys(ds.getValue(DeliveryGuys.class));
+
+                           for (Delivery d : temp.getDeliveries())
+                           {
+                               if (d.getIndexString().equals(clicked_delivery.getIndexString()))
+                               {
+                                   temp.getDeliveries().remove(d);
+                                   break;
+                               }
+                           }
+                            deliveryDuyWithDeletedDelivery = temp;
+                           Log.d(TAG,"remove delivery: " + clicked_delivery.getIndexString() +" from guy: " + temp.getName());
+                        }
+
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        System.out.println("The read failed: " + databaseError.getCode());
+                    }
+                });
+                clicked_delivery.setDelivery_guy_index_assigned("");
                 return true;
             default:
                 return false;

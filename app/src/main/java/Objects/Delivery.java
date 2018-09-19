@@ -1,5 +1,7 @@
 package Objects;
 
+import android.support.v4.util.Pair;
+
 public class Delivery {
 
     private String indexString = "";
@@ -23,6 +25,51 @@ public class Delivery {
     private Boolean is_deleted = false;
     private String business_name = "";
     private String delivery_guy_index_assigned = "";
+    public String deliveryGuyName = "";
+    private double source_cord_lat;
+    private double source_cord_long;
+    private double dest_cord_lat;
+   private double dest_cord_long;
+
+    public String getDeliveryGuyName() {
+        return deliveryGuyName;
+    }
+
+    public void setDeliveryGuyName(String deliveryGuyName) {
+        this.deliveryGuyName = deliveryGuyName;
+    }
+
+    public double getSource_cord_lat() {
+        return source_cord_lat;
+    }
+
+    public void setSource_cord_lat(double source_cord_lat) {
+        this.source_cord_lat = source_cord_lat;
+    }
+
+    public double getSource_cord_long() {
+        return source_cord_long;
+    }
+
+    public void setSource_cord_long(double source_cord_long) {
+        this.source_cord_long = source_cord_long;
+    }
+
+    public double getDest_cord_lat() {
+        return dest_cord_lat;
+    }
+
+    public void setDest_cord_lat(double dest_cord_lat) {
+        this.dest_cord_lat = dest_cord_lat;
+    }
+
+    public double getDest_cord_long() {
+        return dest_cord_long;
+    }
+
+    public void setDest_cord_long(double dest_cord_long) {
+        this.dest_cord_long = dest_cord_long;
+    }
 
     public String getDelivery_guy_index_assigned() {
         return delivery_guy_index_assigned;
@@ -129,7 +176,9 @@ public class Delivery {
     public Delivery(Integer index, String adressTo, String adressFrom, String timeInserted, String status, String comment,
                     String num_of_packets,String costumer_phone,String costumerName,
                     String city,String floor,String building, String entrance,String street,String apartment,
-                    String business_name,String delivery_guy_index_assigned) {
+                    String business_name,String delivery_guy_index_assigned,
+                     double source_cord_lat,double source_cord_long,double dest_cord_lat,double dest_cord_long,
+                    String deliveryGuyName) {
 
         indexString = index.toString();
         this.adressTo = adressTo;
@@ -151,6 +200,11 @@ public class Delivery {
         this.apartment = apartment;
         this.business_name = business_name;
         this.delivery_guy_index_assigned = delivery_guy_index_assigned;
+        this.source_cord_lat = source_cord_lat;
+        this.source_cord_long = source_cord_long;
+        this.dest_cord_lat = dest_cord_lat;
+        this.dest_cord_long = dest_cord_long;
+        this.deliveryGuyName = deliveryGuyName;
       //  this
     }
 
@@ -177,7 +231,11 @@ public Delivery( Delivery d)
     this.apartment = d.getApartment();
     this.business_name = d.getBusiness_name();
     this.delivery_guy_index_assigned = d.getDelivery_guy_index_assigned();
-
+    this.source_cord_lat = d.getSource_cord_lat();
+    this.source_cord_long = d.getSource_cord_long();
+    this.dest_cord_lat = d.getDest_cord_lat();
+    this.dest_cord_long = d.getDest_cord_long();
+    this.deliveryGuyName = d.getDeliveryGuyName();
 }
 
 

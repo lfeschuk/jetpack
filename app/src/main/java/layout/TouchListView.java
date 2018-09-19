@@ -85,6 +85,7 @@ public class TouchListView extends ListView {
             throw new RuntimeException("Footers are not supported with TouchListView in conjunction with remove_mode");
         }
     }
+
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         if (mRemoveListener != null && mGestureDetector == null) {
@@ -362,6 +363,7 @@ public class TouchListView extends ListView {
         }
         return super.onTouchEvent(ev);
     }
+
     private void startDragging(Bitmap bm, int x, int y) {
         Log.d("cwac", "x:"+x+" y:"+y);
         stopDragging();

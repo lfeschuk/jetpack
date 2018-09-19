@@ -153,6 +153,12 @@ class ListAdapter extends ArrayAdapter<Delivery> {
         comment.setText(array.get(position).getComment());
         TextView num_of_packages=(TextView)row.findViewById(R.id.num_of_packages);
         num_of_packages.setText(array.get(position).getNum_of_packets().toString() + "חבילות");
+        if (!array.get(position).getStatus().equals("A"))
+        {
+            TextView name_of_delivery_guy = row.findViewById(R.id.name_of_delivery_guy);
+            name_of_delivery_guy.setText(array.get(position).getDeliveryGuyName());
+            name_of_delivery_guy.setVisibility(View.VISIBLE);
+        }
 
 
 
