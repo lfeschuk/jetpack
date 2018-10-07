@@ -12,10 +12,12 @@ public class Destination {
     private String business_name = "";
     private double latitude;
     private double longitude;
+    private static long index_static = 0;
+    private long index = 0;
 
 
     public Destination(String adressTo, String adressFrom, String timeInserted, String timeTaken, String timeDeliver, Boolean is_costumer,String index_string,
-                       double lati,double longi) {
+                       double lati,double longi ) {
         this.adressTo = adressTo;
         this.adressFrom = adressFrom;
         this.timeInserted = timeInserted;
@@ -25,6 +27,9 @@ public class Destination {
         this.index_string = index_string;
         this.latitude = lati;
         this.longitude = longi;
+        this.index = index_static;
+        index_static++;
+
     }
     public Destination(Destination d) {
         this.adressTo = d.getAdressTo();
@@ -61,6 +66,16 @@ public class Destination {
             this.longitude = d.getSource_cord_long();
             this.latitude = d.getSource_cord_lat();
         }
+        this.index = index_static;
+        this.index_static ++;
+    }
+
+    public static long getIndexStatic() {
+        return index_static;
+    }
+
+    public long getIndex() {
+        return index;
     }
 
     public double getLatitude() {

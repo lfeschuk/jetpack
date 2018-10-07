@@ -2,15 +2,12 @@ package com.example.leonid.jetpack;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.Manifest;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
@@ -24,15 +21,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
+import com.example.leonid.jetpack.adapters.recycleAdapterDeliveries;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 //import com.here.android.mpa.common.GeoCoordinate;
 //import com.here.android.mpa.routing.CoreRouter;
@@ -40,35 +38,28 @@ import com.google.firebase.database.ValueEventListener;
 //import com.here.android.mpa.search.GeocodeRequest;
 //import com.here.android.mpa.search.ResultListener;
 
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import Objects.DataBaseManager;
 import Objects.Delivery;
-import Objects.DeliveryGuys;
-import Objects.DirectionsJSONParser;
-import Objects.DistanceDuration;
+import Objects.DeliveryGuysShift;
+import Objects.GasStation;
+import Objects.Packages;
+import Objects.Restoraunt;
+import Objects.UserAdmin;
 
-public class MainActivity extends AppCompatActivity {
+import static Objects.DeliveryGuysShift.KindShift.DOUBLE;
+import static Objects.DeliveryGuysShift.KindShift.EVENING;
+import static Objects.DeliveryGuysShift.KindShift.MORNING;
+import static Objects.DeliveryGuysShift.KindShift.NONE;
+
+public class MainActivity extends AppCompatActivity implements recycleAdapterDeliveries.ItemClickListener{
 DrawerLayout dLayout;
     private Toolbar toolbar;
+    public static UserAdmin current_user;
     private static TabLayout tabLayout;
     private static ViewPager viewPager;
     public static  ViewPagerAdapter adapter;
@@ -78,14 +69,43 @@ DrawerLayout dLayout;
     private static final String BACK_STACK_ROOT_TAG = "root_fragment";
     private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
 
+
 public static final String TAG = "MainActivity";
 DataBaseManager dbm = new DataBaseManager();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setNavigationDrawer();
+        get_current_user();
 
+//        UserAdmin um = new UserAdmin("leonid","leonidf1991@gmail.com");
+//        um.setEnable_notification(true);
+//        dbm.writeUserAdmin(um);
+
+//        Packages p1 = new Packages("לאוניד","0543639812","מודיעין מכבים רעות","עמק החולה","51","6","-","-","2018-09-30");
+//            Packages p2 = new Packages("ולריה בלוחבוסטוב","0543621412","מודיעין מכבים רעות","עמק זבולון","51","7","-","-","2018-09-30");
+//            Packages p3 = new Packages("יוסי קורדובה","0513456422","מכבים","דם המכבים","60","1","-","-","2018-09-30");
+//    dbm.writePackage(p1);
+//        dbm.writePackage(p2);
+//        dbm.writePackage(p3);
+
+            // String name, String index, double longt, double lat,int time_to_costumer,int time_to_prepare
+//        Restoraunt r = new Restoraunt("אושי אושי","",35.017496,31.886661,60,15);
+//        Restoraunt r2 = new Restoraunt("דומינוס קייזר","",34.997281,31.908044,60,15);
+//        Restoraunt r3 = new Restoraunt("פיצה פרגו","",35.005647,31.885291,60,15);
+//        dbm.writeRestoraunt(r);
+//        dbm.writeRestoraunt(r2);
+//        dbm.writeRestoraunt(r3);
+//        DeliveryGuysShift dgs = new DeliveryGuysShift(1,"1","לאוניד","2018-09-23",NONE,MORNING,EVENING,DOUBLE,NONE,MORNING,DOUBLE);
+//        dbm.writeDeliveryGuyShift(dgs);
+//        GasStation gs = new GasStation("דור אלון יציאה ממודיעין",35.013791,31.909928);
+//        GasStation gs2 = new GasStation("צומת שילת סונול יציאה ממודיעין",35.007356,31.921985);
+//        GasStation gs3 = new GasStation("מיקה ישפרו",34.968058,31.890392);
+//        dbm.writeGasStation(gs);
+//        dbm.writeGasStation(gs2);
+//        dbm.writeGasStation(gs3);
 
 //        Integer index, String adressTo, String adressFrom, String timeInserted, String status, String comment,
 //                String num_of_packets,String costumer_phone,String costumerName,
@@ -96,11 +116,11 @@ DataBaseManager dbm = new DataBaseManager();
 
 
         //getAddressFromLocation(31.919018100000002,34.984552799999996);
-//        Delivery delivery = new Delivery(1,"עמק האלה","מרכז שמשוני","23:00","A",
+//        Delivery delivery = new Delivery(Long.valueOf(1),"עמק האלה","מרכז שמשוני","23:00","D",
 //                "אל תאחרו","3","0525410912","לאוניד כהן","מודיעין","1",
 //                "54","1","עמק האלה","6","ביג אפל פיצה","",
-//                31.911910,35.001865,31.913116,35.007167,"");
-//       dbm.writeDelivery(delivery);
+//                31.911910,35.001865,31.913116,35.007167,"","2018-09-22");
+//       dbm.writeDeliveryOld(delivery);
 //         delivery = new Delivery(2,"עמק החולה","דומינוס שמשוני","23:10","A",
 //                "אל תאחרו בבקשה","1","0525410944","יוסי לוי","מודיעין","1",
 //                "54","1","עמק החולה","3","דומינוס פיצה שמשוני","",
@@ -113,6 +133,8 @@ DataBaseManager dbm = new DataBaseManager();
 //        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
 //        mapIntent.setPackage("com.google.android.apps.maps");
 //        startActivity(mapIntent);
+
+        //here is previous code
        Log.d(TAG,"send to Db");
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -125,7 +147,9 @@ DataBaseManager dbm = new DataBaseManager();
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
     }
-    private void requestPermissions() {
+
+
+        private void requestPermissions() {
 
         final List<String> requiredSDKPermissions = new ArrayList<String>();
         requiredSDKPermissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
@@ -211,7 +235,27 @@ DataBaseManager dbm = new DataBaseManager();
     }
 
 
+    public void get_current_user()
+    {
+       Query query =  FirebaseDatabase.getInstance().getReference("User_Admin").orderByChild("email").equalTo(FirebaseAuth.getInstance().getCurrentUser().getEmail());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds : dataSnapshot.getChildren())
+                {
+                    UserAdmin temp = new UserAdmin(ds.getValue(UserAdmin.class));
+                    current_user = temp;
+                            Log.d(TAG,"UserAdmin is :  " + temp);
+                }
 
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
+    }
 
     private void setupViewPager(ViewPager viewPager) {
          adapter = new ViewPagerAdapter(getSupportFragmentManager());
@@ -221,6 +265,11 @@ DataBaseManager dbm = new DataBaseManager();
         adapter.addFragment(deliveries_fragment, "משלוחים");
         adapter.addFragment(delivery_guys_fragment, "שליחים");
         viewPager.setAdapter(adapter);
+    }
+
+    @Override
+    public void itemClicked(Delivery delivery) {
+
     }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {
@@ -233,6 +282,7 @@ DataBaseManager dbm = new DataBaseManager();
 
         @Override
         public Fragment getItem(int position) {
+
             return mFragmentList.get(position);
         }
 
@@ -262,31 +312,40 @@ DataBaseManager dbm = new DataBaseManager();
                 Fragment frag = null; // create a Fragment Object
                 int itemId = menuItem.getItemId(); // get selected menu item's id
 // check selected menu item's id and replace a Fragment Accordingly
+                //refresh
                 if (itemId == R.id.nav_1) {
                     frag = new FirstFragment();
+                    //deliveries oin road
                 } else if (itemId == R.id.nav_2) {
                     frag = null;
                     Log.d(TAG,"maps checked");
                 } else if (itemId == R.id.nav_3) {
                     frag = new DelayedDeliveryFragment();
+                    //sort deliveries
                 } else if (itemId == R.id.nav_4) {
-                    frag = new ThirdFragment();
+                    frag = null;
+                    //presence time
                 } else if (itemId == R.id.nav_15) {
-                    frag = new ThirdFragment();
+                    frag = null;
+                    //errors in shift
                 } else if (itemId == R.id.nav_5) {
-                    frag = new ThirdFragment();
+                    frag = null;
+                    //notification button
                 } else if (itemId == R.id.nav_6) {
-                    frag = new ThirdFragment();
+                    frag = null;
+                    //gas station
                 } else if (itemId == R.id.nav_7) {
-                    frag = new ThirdFragment();
+                    frag = null;
+                    //packages
                 } else if (itemId == R.id.nav_8) {
-                    frag = new ThirdFragment();
+                    frag = null;
                 } else if (itemId == R.id.nav_9) {
                     frag = new ThirdFragment();
                 } else if (itemId == R.id.nav_10) {
                     frag = new ThirdFragment();
+                    //shifts
                 } else if (itemId == R.id.nav_11) {
-                    frag = new ThirdFragment();
+                    frag = null;
                 } else if (itemId == R.id.nav_12) {
                     frag = new ThirdFragment();
                 } else if (itemId == R.id.nav_13) {
@@ -300,14 +359,14 @@ DataBaseManager dbm = new DataBaseManager();
                     FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                     transaction.replace(R.id.container, frag); // replace a Fragment with Frame Layout
                   //  transaction.addToBackStack(frag.getClass().getSimpleName()); //maybe null instead
-                //    transaction.addToBackStack(deliveries_fragment.getClass().getSimpleName());
-                 //   transaction.remove(deliveries_fragment);
-                    transaction.addToBackStack(BACK_STACK_ROOT_TAG); //maybe null instead
+                  //  transaction.addToBackStack(deliveries_fragment.getClass().getSimpleName());
+                    transaction.remove(deliveries_fragment);
+                //    transaction.addToBackStack(BACK_STACK_ROOT_TAG); //maybe null instead
                     transaction.commit(); // commit the changes
                     dLayout.closeDrawers(); // close the all open Drawer Views
                     return true;
                 }
-                else
+                else if(itemId == R.id.nav_2 )
                 {
                     dLayout.closeDrawers(); // close the all open Drawer Views
                     Intent intent = new Intent(MainActivity.this, MapsActivity.class);
@@ -316,6 +375,52 @@ DataBaseManager dbm = new DataBaseManager();
 //                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     startActivity(intent);
                 }
+                else if (itemId == R.id.nav_4)
+                {
+                    dLayout.closeDrawers(); // close the all open Drawer Views
+                    Intent intent = new Intent(MainActivity.this, SortAllPreviousDeliveriesActivity.class);
+                    startActivity(intent);
+                }
+                else if (itemId == R.id.nav_15)
+                {
+                    dLayout.closeDrawers(); // close the all open Drawer Views
+                    Intent intent = new Intent(MainActivity.this, DisplayDeliveryGuyWorkingHours.class);
+                    startActivity(intent);
+                }
+                else if (itemId == R.id.nav_6)
+                {
+                    dLayout.closeDrawers(); // close the all open Drawer Views
+                    Intent intent = new Intent(MainActivity.this, FragmentNotificationButton.class);
+                    startActivity(intent);
+
+                }
+                else if (itemId == R.id.nav_7)
+                {
+                    dLayout.closeDrawers(); // close the all open Drawer Views
+                    Intent intent = new Intent(MainActivity.this, SendDeliveryToGasStationActivity.class);
+                    startActivity(intent);
+
+                }
+                else if (itemId == R.id.nav_11)
+                {
+                    dLayout.closeDrawers(); // close the all open Drawer Views
+                    Intent intent = new Intent(MainActivity.this, DeliveryGuysShiftActivity.class);
+                    startActivity(intent);
+
+                }
+                else if (itemId == R.id.nav_5)
+                {
+                    dLayout.closeDrawers(); // close the all open Drawer Views
+                    Intent intent = new Intent(MainActivity.this, ShiftErrorActivity.class);
+                    startActivity(intent);
+                }
+                else if (itemId == R.id.nav_8)
+                {
+                    dLayout.closeDrawers(); // close the all open Drawer Views
+                    Intent intent = new Intent(MainActivity.this, PackagesActivity.class);
+                    startActivity(intent);
+                }
+
                 return false;
             }
         });
@@ -323,7 +428,19 @@ DataBaseManager dbm = new DataBaseManager();
     public static void set_title_for_adapter(int pos,int num)
     {
         Log.d(TAG,"set_title_for_adapter  pos: " + pos + " num: " + num);
-       String set_text =  tabLayout.getTabAt(pos).getText() + "(" + num + ")";
+        String set_text = " ";
+        if (pos == 0)
+        {
+            set_text = "משלוחים" + "(" + num + ")";
+        }
+        else if (pos == 1)
+        {
+            set_text = "שליחים" + "(" + num + ")";
+        }
+        else
+        {
+           Log.e(TAG,"error in set_title_for_adapter pos nor 0 or 1");
+        }
        tabLayout.getTabAt(pos).setText(set_text);
     }
 }

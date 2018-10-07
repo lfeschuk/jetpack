@@ -79,6 +79,29 @@ public class DistanceDuration {
 
         return url;
     }
+    public String getDistanceToClosestGasStation(LatLng origin){
+
+// Origin of route
+        String str_origin = "origin="+origin.latitude+","+origin.longitude;
+
+// Destination of route
+       String by_distance = "rankby=distance";
+       String gas_station = "type=gas_station";
+
+// Sensor enabled
+        String sensor = "sensor=false";
+
+// Building the parameters to the web service
+        String parameters = str_origin+"&"+by_distance+"&"+gas_station+"&"+sensor;
+
+// Output format
+        String output = "json";
+
+// Building the url to the web service
+        String url = "https://maps.googleapis.com/maps/api/directions/"+output+"?"+parameters;
+
+        return url;
+    }
 
     /** A method to download json data from url */
     public String downloadUrl(String strUrl) throws IOException {

@@ -3,6 +3,7 @@ package com.example.leonid.jetpack;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.UserManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +21,9 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import Objects.DataBaseManager;
+import Objects.UserAdmin;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -121,6 +125,10 @@ public class LoginActivity extends AppCompatActivity {
 
                     }
                 });
+        UserAdmin um = new UserAdmin(user.getDisplayName(),email);
+        um.setEnable_notification(true);
+        DataBaseManager dbm = new DataBaseManager();
+        dbm.writeUserAdmin(um);
     }
     void updateUI(FirebaseUser user)
     {

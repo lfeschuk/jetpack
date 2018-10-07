@@ -1,11 +1,16 @@
 package com.example.leonid.jetpack;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
 import android.util.Log;
@@ -15,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.text.DateFormat;
@@ -22,6 +28,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import com.example.leonid.jetpack.adapters.recycleAdapterConst;
+import com.example.leonid.jetpack.adapters.recycleAdapterDeliveryGuys;
+import com.example.leonid.jetpack.adapters.recycleAdapterRoutes;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -44,31 +53,42 @@ import Objects.DeliveryGuys;
 import Objects.Destination;
 import Objects.DirectionsJSONParser;
 import Objects.DistanceDuration;
-import layout.TouchListView;
 
-public class PendingDeliveriesForGuyActivity extends AppCompatActivity {
+
+public class PendingDeliveriesForGuyActivity extends AppCompatActivity implements recycleAdapterRoutes.ItemClickListener{
     public PendingDeliveriesForGuyActivity(){}
     private Toolbar toolbar;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-    private ListAdapter adapter=null;
-    TouchListView tlv;
-
+    PendingDeliveriesForGuyActivity this_context = this;
     Delivery to_assign_delivery = null;
     DeliveryGuys chosen_delivery_guy = null;
     ArrayList<DistanceDuration> durations_list = new ArrayList<>();
+    private RecyclerView recyclerView;
     final static String TAG = "PendingDeliverForGuy";
     private DataBaseManager dbm = new DataBaseManager();
     private ArrayList<Destination> array = new ArrayList<>();
+    recycleAdapterRoutes adapter = new recycleAdapterRoutes(array, this_context);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pending_deliveries_activity);
         Log.d(TAG, "on intent");
-        tlv=(TouchListView)findViewById(R.id.touch_listview_delivery_routes);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        recyclerView = (RecyclerView) findViewById(R.id.list);
+        ImageView overlay = (ImageView) findViewById(R.id.overlay);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addOnItemTouchListener(new DragController(recyclerView, overlay, recycleAdapterConst.AdapterList.ROUTES));
+        DividerItemDecoration horizontalDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                DividerItemDecoration.VERTICAL);
+        Drawable horizontalDivider = ContextCompat.getDrawable(this, R.drawable.horizontal_divider);
+        horizontalDecoration.setDrawable(horizontalDivider);
+        recyclerView.addItemDecoration(horizontalDecoration);
 
         Bundle b = getIntent().getExtras();
         final String delivery_key = b.getString("Delivery_Index");
@@ -100,7 +120,7 @@ public class PendingDeliveriesForGuyActivity extends AppCompatActivity {
                     array.add(to_costumer);
                 }
                 Log.d(TAG,"Done retrieving Destinations old " + array.size());
-                tlv.setAdapter(adapter);
+                recyclerView.setAdapter(adapter);
             }
 
             @Override
@@ -128,7 +148,7 @@ public class PendingDeliveriesForGuyActivity extends AppCompatActivity {
                     Log.d(TAG,"Delivery is :  " + temp.getIndexString());
                 }
                 Log.d(TAG,"Done retrieving Destinations new" + array.size());
-                tlv.setAdapter(adapter);
+                recyclerView.setAdapter(adapter);
             }
 
             @Override
@@ -137,9 +157,6 @@ public class PendingDeliveriesForGuyActivity extends AppCompatActivity {
             }
         });
 
-        adapter=new ListAdapter();
-        tlv.setAdapter(adapter);
-        tlv.setDropListener(onDrop);
         Log.d(TAG,"onCreate");
 
         //assign the button
@@ -161,6 +178,7 @@ public class PendingDeliveriesForGuyActivity extends AppCompatActivity {
 
                 to_assign_delivery.setDelivery_guy_index_assigned(chosen_delivery_guy.getIndex_string());
                 to_assign_delivery.setDeliveryGuyName(chosen_delivery_guy.getName());
+                to_assign_delivery.setDeliveryGuyPhone(chosen_delivery_guy.getPhone());
                 chosen_delivery_guy.addDelivery(to_assign_delivery);
                 Delivery to_write_deliv = new Delivery(to_assign_delivery);
                 DeliveryGuys to_write_guy = new DeliveryGuys(chosen_delivery_guy);
@@ -231,59 +249,52 @@ public class PendingDeliveriesForGuyActivity extends AppCompatActivity {
                 array.get(i).setTimeDeliver(date_deliver);
                 curr_iter_date = new_date;
         }
-        tlv.setAdapter(adapter);
+        recyclerView.setAdapter(adapter);
 
     }
 
+    @Override
+    public void itemClicked(Destination d) {
 
-    private TouchListView.DropListener onDrop=new TouchListView.DropListener() {
-        @Override
-        public void drop(int from, int to) {
-            // change the item position using from and to position
-            Destination item=adapter.getItem(from);
-            adapter.remove(item);
-            adapter.insert(item, to);
-
-        }
-    };
-
-
-    class ListAdapter extends ArrayAdapter<Destination> {
-        ListAdapter() {
-            super(PendingDeliveriesForGuyActivity.this, R.layout.adapter_layout_delivery_routes, array);
-        }
-        public View getView(int position, View convertView,
-                            ViewGroup parent) {
-            View row=convertView;
-            if (row==null) {
-                LayoutInflater inflater=getLayoutInflater();
-                row=inflater.inflate(R.layout.adapter_layout_delivery_routes, parent, false);
-            }
-            TextView index_delivery = row.findViewById(R.id.index_delivery_routes);
-            index_delivery.setText(array.get(position).getIndex_string());
-            TextView time_of_order = row.findViewById(R.id.time_of_order_routes);
-            time_of_order.setText(array.get(position).getTimeInserted());
-            TextView time_to_destination = row.findViewById(R.id.time_to_destination_routes);
-            time_to_destination.setText(array.get(position).getTimeDeliver());
-            TextView addresses = row.findViewById(R.id.addresses_routes);
-            TextView from_where_the_delivery = row.findViewById(R.id.from_where_the_delivery_routes);
-            if (array.get(position).getTo_costumer())
-            {
-                String adress_or_cost_name = "(" + array.get(position).getName_costumer() + ")";
-                addresses.setText(array.get(position).getAdressTo() + adress_or_cost_name);
-                from_where_the_delivery.setText("משלוח מ:" + array.get(position).getBusiness_name());
-                from_where_the_delivery.setVisibility(View.VISIBLE);
-
-
-            }
-            else
-            {
-                String adress_or_cost_name = "(" + array.get(position).getAdressFrom() + ")";
-                addresses.setText(array.get(position).getBusiness_name() + adress_or_cost_name);
-            }
-
-            return(row);
-        }
     }
+
+//
+//    class ListAdapter extends ArrayAdapter<Destination> {
+//        ListAdapter() {
+//            super(PendingDeliveriesForGuyActivity.this, R.layout.adapter_layout_delivery_routes, array);
+//        }
+//        public View getView(int position, View convertView,
+//                            ViewGroup parent) {
+//            View row=convertView;
+//            if (row==null) {
+//                LayoutInflater inflater=getLayoutInflater();
+//                row=inflater.inflate(R.layout.adapter_layout_delivery_routes, parent, false);
+//            }
+//            TextView index_delivery = row.findViewById(R.id.index_delivery_routes);
+//            index_delivery.setText(array.get(position).getIndex_string());
+//            TextView time_of_order = row.findViewById(R.id.time_of_order_routes);
+//            time_of_order.setText(array.get(position).getTimeInserted());
+//            TextView time_to_destination = row.findViewById(R.id.time_to_destination_routes);
+//            time_to_destination.setText(array.get(position).getTimeDeliver());
+//            TextView addresses = row.findViewById(R.id.addresses_routes);
+//            TextView from_where_the_delivery = row.findViewById(R.id.from_where_the_delivery_routes);
+//            if (array.get(position).getTo_costumer())
+//            {
+//                String adress_or_cost_name = "(" + array.get(position).getName_costumer() + ")";
+//                addresses.setText(array.get(position).getAdressTo() + adress_or_cost_name);
+//                from_where_the_delivery.setText("משלוח מ:" + array.get(position).getBusiness_name());
+//                from_where_the_delivery.setVisibility(View.VISIBLE);
+//
+//
+//            }
+//            else
+//            {
+//                String adress_or_cost_name = "(" + array.get(position).getAdressFrom() + ")";
+//                addresses.setText(array.get(position).getBusiness_name() + adress_or_cost_name);
+//            }
+//
+//            return(row);
+//        }
+//    }
 
 }

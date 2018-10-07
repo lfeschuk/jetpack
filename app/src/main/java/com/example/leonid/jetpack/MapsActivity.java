@@ -1,19 +1,37 @@
 package com.example.leonid.jetpack;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 
+import com.example.leonid.jetpack.adapters.recycleAdapterDeliveryGuys;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+
+import Objects.DeliveryGuys;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     MapView mMapView;
     private GoogleMap mMap;
+    private ArrayList<Marker> marker_array = new ArrayList<>();
+    private ArrayList<DeliveryGuys> array = new ArrayList<>();
+    Boolean first_time = true;
+    private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
     public static final String TAG = "MapsActivity";
     @Override
@@ -29,10 +47,26 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (savedInstanceState != null) {
             mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
         }
-        
+
+
+
+        //todo add remove child listener
+
         mMapView = findViewById(R.id.map_view);
         mMapView.onCreate(mapViewBundle);
         mMapView.getMapAsync(this);
+    }
+
+    private Marker get_marker(String index)
+    {
+        for(Marker m : marker_array)
+        {
+            if (m.getTag().equals(index))
+            {
+                return m;
+            }
+        }
+        return null;
     }
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -83,8 +117,46 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setMinZoomPreference(12);
-        LatLng ny = new LatLng(31.8903, 35.0104);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(ny));
+        LatLng modiin = new LatLng(31.8903, 35.0104);
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(modiin));
+
+        mDatabase =  FirebaseDatabase.getInstance().getReference("Delivery_Guys");
+        mDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for(DataSnapshot ds : dataSnapshot.getChildren())
+                {
+                    DeliveryGuys temp = new DeliveryGuys(ds.getValue(DeliveryGuys.class));
+                    Marker m = get_marker(temp.getIndex_string());
+                    //new marker
+                    if (m == null)
+                    {
+                        MarkerOptions guy = new MarkerOptions();
+                        guy.position(new LatLng(temp.getLatetude(), temp.getLongtitude()));
+                        guy.title(temp.getName() + "(" + temp.getTimeBeFree() + ")");
+                        m = mMap.addMarker(guy);
+                        m.setTag(temp.getIndex_string());
+                        m.showInfoWindow();
+                        marker_array.add(m);
+                        Log.d(TAG, "DeliveryGuy is :  " + temp.getName());
+                    }
+                    //existed marker
+                    else
+                    {
+                        m.setPosition(new LatLng(temp.getLatetude(), temp.getLongtitude()));
+                        m.setTitle(temp.getName() + "(" + temp.getTimeBeFree() + ")");
+                    }
+
+                }
+                Log.d(TAG,"Maps Done retrieving DeliveryGuy " + array.size());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
     }
 //    @Override
 //    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

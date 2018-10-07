@@ -1,6 +1,6 @@
 package Objects;
 
-public class Business {
+public abstract class Business {
 
     String name = "";
     String index = "";
@@ -14,6 +14,14 @@ public class Business {
         this.lat = lat;
         this.index = index;
     }
+    public Business (Business b)
+    {
+        this.name = b.getName();
+        this.longt = b.getLongt();
+        this.lat = b.getLat();
+        this.index = b.getIndex();
+    }
+    public Business(){}
     public String getName() {
         return name;
     }
@@ -36,5 +44,9 @@ public class Business {
 
     public void setLat(double lat) {
         this.lat = lat;
+    }
+
+    public String getIndex() {
+        return index;
     }
 }

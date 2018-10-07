@@ -1,18 +1,36 @@
 package com.example.leonid.jetpack;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.example.leonid.jetpack.adapters.recycleAdapterConst;
+import com.example.leonid.jetpack.adapters.recycleAdapterDeliveries;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -23,16 +41,26 @@ import java.util.ArrayList;
 
 import Objects.DataBaseManager;
 import Objects.Delivery;
-import layout.TouchListView;
 
-public class FragmentDeliveries extends Fragment {
+import static android.support.v7.widget.DividerItemDecoration.HORIZONTAL;
+
+
+public class FragmentDeliveries extends Fragment implements recycleAdapterDeliveries.ItemClickListener{
 
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-    private ListAdapter adapter=null;
-    TouchListView tlv;
+//    private ListAdapter adapter=null;
     final static String TAG = "FragmentDeliveries";
     private DataBaseManager dbm = new DataBaseManager();
     private ArrayList<Delivery> array = new ArrayList<>();
+    private RecyclerView recyclerView;
+    private  CoordinatorLayout cl;
+    private FloatingActionButton fab;
+    Boolean is_show_a = true;
+    Boolean is_show_b = true;
+    Boolean is_show_c = true;
+    Boolean is_show_d = false;
+    Boolean is_show_changed = false;
+    FragmentDeliveries this_fragment = this;
     public FragmentDeliveries(){}
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,23 +72,44 @@ public class FragmentDeliveries extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        // Inflate the layout for this fragment
-        View fragment_view =  inflater.inflate(R.layout.fragment_deliveries, container, false);
+        LinearLayout wrapper = new LinearLayout(getActivity()); // for example
+        View fragment_view =  inflater.inflate(R.layout.fragment_recycle_list, wrapper, true);
 
-        tlv=(TouchListView)fragment_view.findViewById(R.id.touch_listview_delivery);
+        recyclerView = (RecyclerView) fragment_view.findViewById(R.id.list);
+        ImageView overlay = (ImageView) fragment_view.findViewById(R.id.overlay);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addOnItemTouchListener(new DragController(recyclerView, overlay, recycleAdapterConst.AdapterList.DELIVERIES));
+        DividerItemDecoration horizontalDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                DividerItemDecoration.VERTICAL);
+        Drawable horizontalDivider = ContextCompat.getDrawable(getActivity(), R.drawable.horizontal_divider);
+        horizontalDecoration.setDrawable(horizontalDivider);
+        recyclerView.addItemDecoration(horizontalDecoration);
+        cl = fragment_view.findViewById(R.id.recycle_list_coordinator);
+         fab = fragment_view.findViewById(R.id.fab);
+        set_fab();
+
+
         mDatabase =  FirebaseDatabase.getInstance().getReference("Deliveries");
         mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                array.clear();
                 for(DataSnapshot ds : dataSnapshot.getChildren())
                 {
                     Delivery temp = new Delivery(ds.getValue(Delivery.class));
-                    array.add(temp);
+                    if (!temp.getIs_gas_sta())
+                    {
+                        array.add(temp);
+                    }
+
                     Log.d(TAG,"Delivery is :  " + temp);
                 }
                 MainActivity.set_title_for_adapter(0,array.size());
                 Log.d(TAG,"Done retrieving Deliveries " + array.size());
-                tlv.setAdapter(adapter);
+                display_data();
+               // tlv.setAdapter(adapter);
             }
 
             @Override
@@ -69,101 +118,128 @@ public class FragmentDeliveries extends Fragment {
             }
         });
 
-        adapter=new ListAdapter();
-        tlv.setAdapter(adapter);
-        tlv.setDropListener(onDrop);
-        tlv.setOnItemClickListener(new AdapterView.OnItemClickListener()
-        {
-            @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int position,
-                                    long arg3) {
-                Log.d(TAG,"onTouch");
-                Delivery d = array.get(position);
-                Toast.makeText(getActivity(), "Touch delivery guy: " + d.getIndexString(), Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(getActivity(), DeliveryDataActivity.class);
-                Bundle b = new Bundle();
-                Log.d(TAG,"passing index string " + d.getIndexString());
-         //       b.putInt("Delivery_Index", Integer.valueOf(d.getIndexString()) ); //Your i
-
-                b.putString("Delivery_Index",d.getIndexString());
-                intent.putExtras(b); //Put your id to your next Intent
-                startActivity(intent);
-
-            }
-        });
         return fragment_view;
 
     }
-    private TouchListView.DropListener onDrop=new TouchListView.DropListener() {
-        @Override
-        public void drop(int from, int to) {
-            // change the item position using from and to position
-            Delivery item=adapter.getItem(from);
-            adapter.remove(item);
-            adapter.insert(item, to);
 
-        }
-    };
+ public void set_fab()
+ {
+     fab.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View view) {
+             final Dialog dialog = new Dialog(getActivity(),R.style.Theme_Dialog);
+             // AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-//    private final class MyTouchListener implements View.OnTouchListener {
-//        public boolean onTouch(View view, MotionEvent motionEvent) {
-//            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-//                ClipData data = ClipData.newPlainText("", "");
-//                View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(
-//                        view);
-//                view.startDrag(data, shadowBuilder, view, 0);
-//                view.setVisibility(View.INVISIBLE);
-//                return true;
-//            } else {
-//                return false;
-//            }
-//        }
-//    }
-class ListAdapter extends ArrayAdapter<Delivery> {
-    ListAdapter() {
-        super(getActivity(), R.layout.adapter_layout_deliveries, array);
+             //  LayoutInflater li = LayoutInflater.from(getActivity());
+             //    final View myView = li.inflate(R.layout.checkbox_sort_deliveries, null);
+             dialog.setContentView(R.layout.checkbox_sort_deliveries);
+             dialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+//                builder.setView(myView);
+//                builder.setNeutralButton("סיום", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialogInterface, int i) {
+//
+//                    }
+//                });
+             //  AlertDialog dialog = builder.create();
+             //       dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+             Button b = dialog.findViewById(R.id.button_end);
+             b.setOnClickListener(new View.OnClickListener() {
+                 @Override
+                 public void onClick(View view) {
+                     if (is_show_changed)
+                     {
+                         display_data();
+                     }
+                     dialog.dismiss();
+                     fab.setVisibility(View.VISIBLE);
+                 }
+             });
+             CheckBox sort_by_a = dialog.findViewById(R.id.checkbox_sort_a);
+             sort_by_a.setChecked(is_show_a);
+             sort_by_a.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                 @Override
+                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                     is_show_a = b;
+                     is_show_changed = true;
+                 }
+             });
+             CheckBox sort_by_b = dialog.findViewById(R.id.checkbox_sort_b);
+             sort_by_b.setChecked(is_show_b);
+             sort_by_b.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                 @Override
+                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                     is_show_b = b;
+                     is_show_changed = true;
+                 }
+             });
+             CheckBox sort_by_c = dialog.findViewById(R.id.checkbox_sort_c);
+             sort_by_c.setChecked(is_show_c);
+             sort_by_c.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                 @Override
+                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                     is_show_c = b;
+                     is_show_changed = true;
+                 }
+             });
+             CheckBox sort_by_d = dialog.findViewById(R.id.checkbox_sort_d);
+             sort_by_d.setChecked(is_show_d);
+             sort_by_d.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                 @Override
+                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                     is_show_d = b;
+                     is_show_changed = true;
+                 }
+             });
+
+
+             WindowManager.LayoutParams wmlp = dialog.getWindow().getAttributes();
+
+
+             wmlp.gravity = Gravity.BOTTOM | Gravity.RIGHT;
+
+
+             fab.setVisibility(View.GONE);
+             dialog.show();
+             //  dialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+         }
+     });
+
+ }
+ public void display_data()
+ {
+     ArrayList<Delivery> to_display = null;
+     if (is_show_a && is_show_b && is_show_c)
+     {
+        to_display = array;
+     }
+     else
+     {
+         to_display = new ArrayList<>();
+         for (Delivery d: array)
+         {
+             if ((d.getStatus().equals("A") && is_show_a) || (d.getStatus().equals("B") && is_show_b) || (d.getStatus().equals("C") && is_show_c) || (d.getStatus().equals("D") && is_show_d))
+             {
+                 to_display.add(d);
+             }
+         }
+     }
+     recycleAdapterDeliveries adapter = new recycleAdapterDeliveries(to_display, this_fragment);
+     recyclerView.setAdapter(adapter);
+ }
+
+    @Override
+    public void itemClicked(Delivery d) {
+        Toast.makeText(recyclerView.getContext(),"hhh", Toast.LENGTH_SHORT).show();
+        Log.d(TAG,"onTouch");
+        Toast.makeText(getActivity(), "Touch delivery guy: " + d.getIndexString(), Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(getActivity(), DeliveryDataActivity.class);
+        Bundle b = new Bundle();
+        Log.d(TAG,"passing index string " + d.getIndexString());
+        b.putString("Delivery_Index",d.getIndexString());
+        intent.putExtras(b); //Put your id to your next Intent
+        startActivity(intent);
     }
-    public View getView(int position, View convertView,
-                        ViewGroup parent) {
-        View row=convertView;
-        if (row==null) {
-            LayoutInflater inflater=getLayoutInflater();
-            row=inflater.inflate(R.layout.adapter_layout_deliveries, parent, false);
-        }
-       // Log.d(TAG,"Array_ size  is :  " + array.size());
-        TextView index_delivery=(TextView)row.findViewById(R.id.index_delivery);
-        index_delivery.setText(array.get(position).getIndexString());
-        TextView time_of_order=(TextView)row.findViewById(R.id.time_of_order);
-        time_of_order.setText(array.get(position).getTimeInserted());
-        TextView time_to_prepare=(TextView)row.findViewById(R.id.time_to_prepare);
-        time_to_prepare.setText(array.get(position).getPrepare_time());
-        TextView status=(TextView)row.findViewById(R.id.status);
-        status.setText(array.get(position).getStatus());
-        TextView addresses=(TextView)row.findViewById(R.id.addresses);
-        addresses.setText(array.get(position).getAdressTo()+ "-" + array.get(position).getAdressFrom());
-        TextView time_taken=(TextView)row.findViewById(R.id.time_taken);
-        time_taken.setText(array.get(position).getTimeTaken());
-        TextView delta_taken=(TextView)row.findViewById(R.id.delta_taken);
-        delta_taken.setText("+2");
-        TextView time_arrived=(TextView)row.findViewById(R.id.time_arrived);
-        time_arrived.setText(array.get(position).getTimeDeliver());
-        TextView delta_arrived=(TextView)row.findViewById(R.id.delta_arrived);
-        delta_arrived.setText("-2");
-        TextView comment=(TextView)row.findViewById(R.id.comment);
-        comment.setText(array.get(position).getComment());
-        TextView num_of_packages=(TextView)row.findViewById(R.id.num_of_packages);
-        num_of_packages.setText(array.get(position).getNum_of_packets().toString() + "חבילות");
-        if (!array.get(position).getStatus().equals("A"))
-        {
-            TextView name_of_delivery_guy = row.findViewById(R.id.name_of_delivery_guy);
-            name_of_delivery_guy.setText(array.get(position).getDeliveryGuyName());
-            name_of_delivery_guy.setVisibility(View.VISIBLE);
-        }
 
-
-
-        return(row);
-    }
-}
 
 }

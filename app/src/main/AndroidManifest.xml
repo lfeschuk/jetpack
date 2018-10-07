@@ -56,6 +56,23 @@
         <activity android:name="DeliveryDataActivity"></activity>
         <activity android:name="ActiveDeliveryGuysActivity"></activity>
         <activity android:name="PendingDeliveriesForGuyActivity"></activity>
+        <activity android:name="SortAllPreviousDeliveriesActivity"></activity>
+        <activity android:name="DisplayDeliveryGuyWorkingHours"></activity>
+        <activity android:name="FragmentNotificationButton"></activity>
+        <activity android:name="SendDeliveryToGasStationActivity"></activity>
+        <activity android:name="PackagesActivity"></activity>
+
+        <activity
+            android:name="DeliveryGuysShiftActivity"
+            android:screenOrientation="landscape">
+        </activity>
+        <activity android:name="ShiftErrorActivity"></activity>
+
+
+
+
+
+
 
 
     </application>

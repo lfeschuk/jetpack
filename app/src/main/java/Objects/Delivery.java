@@ -4,6 +4,7 @@ import android.support.v4.util.Pair;
 
 public class Delivery {
 
+    private long index;
     private String indexString = "";
    private String adressTo = "";
    private String adressFrom = "";
@@ -13,9 +14,13 @@ public class Delivery {
    private String comment = "";
    private String num_of_packets = "";
    private String costumer_phone = "";
+   private String timeArriveToRestoraunt = "";
    private String timeTaken = "";
    private String timeDeliver = "";
+   private Boolean was_late_restoraunt;
+   private Boolean was_late_deliveries;
     private String costumerName = "";
+    private String date = "";
     private String city = "";
     private String floor = "";
     private String entrance = "";
@@ -26,10 +31,61 @@ public class Delivery {
     private String business_name = "";
     private String delivery_guy_index_assigned = "";
     public String deliveryGuyName = "";
+    public String deliveryGuyPhone = "";
     private double source_cord_lat;
     private double source_cord_long;
     private double dest_cord_lat;
    private double dest_cord_long;
+   private Boolean is_gas_sta = false;
+   private GasStation gasStation;
+
+    public Boolean getWas_late_deliveries() {
+        return was_late_deliveries;
+    }
+
+    public Boolean getWas_late_restoraunt() {
+        return was_late_restoraunt;
+    }
+
+    public void setWas_late_deliveries(Boolean was_late_deliveries) {
+        this.was_late_deliveries = was_late_deliveries;
+    }
+
+    public void setWas_late_restoraunt(Boolean was_late_restoraunt) {
+        this.was_late_restoraunt = was_late_restoraunt;
+    }
+
+    public String getTimeArriveToRestoraunt() {
+        return timeArriveToRestoraunt;
+    }
+
+    public void setTimeArriveToRestoraunt(String timeArriveToRestoraunt) {
+        this.timeArriveToRestoraunt = timeArriveToRestoraunt;
+    }
+
+    public Boolean getIs_gas_sta() {
+        return is_gas_sta;
+    }
+
+    public GasStation getGasStation() {
+        return gasStation;
+    }
+
+    public void setGasStation(GasStation gasStation) {
+        this.gasStation = gasStation;
+    }
+
+    public void setIs_gas_sta(Boolean is_gas_sta) {
+        this.is_gas_sta = is_gas_sta;
+    }
+
+    public long getIndex() {
+        return index;
+    }
+
+    public void setIndex(long index) {
+        this.index = index;
+    }
 
     public String getDeliveryGuyName() {
         return deliveryGuyName;
@@ -37,6 +93,14 @@ public class Delivery {
 
     public void setDeliveryGuyName(String deliveryGuyName) {
         this.deliveryGuyName = deliveryGuyName;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 
     public double getSource_cord_lat() {
@@ -173,13 +237,21 @@ public class Delivery {
         this.indexString = indexString;
     }
 
-    public Delivery(Integer index, String adressTo, String adressFrom, String timeInserted, String status, String comment,
-                    String num_of_packets,String costumer_phone,String costumerName,
-                    String city,String floor,String building, String entrance,String street,String apartment,
-                    String business_name,String delivery_guy_index_assigned,
-                     double source_cord_lat,double source_cord_long,double dest_cord_lat,double dest_cord_long,
-                    String deliveryGuyName) {
+    public String getDeliveryGuyPhone() {
+        return deliveryGuyPhone;
+    }
 
+    public void setDeliveryGuyPhone(String deliveryGuyPhone) {
+        this.deliveryGuyPhone = deliveryGuyPhone;
+    }
+
+    public Delivery(Long index, String adressTo, String adressFrom, String timeInserted, String status, String comment,
+                    String num_of_packets, String costumer_phone, String costumerName,
+                    String city, String floor, String building, String entrance, String street, String apartment,
+                    String business_name, String delivery_guy_index_assigned,
+                    double source_cord_lat, double source_cord_long, double dest_cord_lat, double dest_cord_long,
+                    String deliveryGuyName, String date, String timeArriveToRestoraunt,String deliveryGuyPhone) {
+        this.index = index;
         indexString = index.toString();
         this.adressTo = adressTo;
         this.adressFrom = adressFrom;
@@ -205,6 +277,10 @@ public class Delivery {
         this.dest_cord_lat = dest_cord_lat;
         this.dest_cord_long = dest_cord_long;
         this.deliveryGuyName = deliveryGuyName;
+        this.date = date;
+        this.timeArriveToRestoraunt = timeArriveToRestoraunt;
+        this.deliveryGuyPhone = deliveryGuyPhone;
+
       //  this
     }
 
@@ -236,6 +312,14 @@ public Delivery( Delivery d)
     this.dest_cord_lat = d.getDest_cord_lat();
     this.dest_cord_long = d.getDest_cord_long();
     this.deliveryGuyName = d.getDeliveryGuyName();
+    this.index = d.getIndex();
+    this.date = d.getDate();
+    this.gasStation = d.getGasStation();
+    this.is_gas_sta = d.getIs_gas_sta();
+    this.timeArriveToRestoraunt = d.getTimeArriveToRestoraunt();
+    this.was_late_deliveries = d.getWas_late_deliveries();
+    this.was_late_restoraunt = d.getWas_late_restoraunt();
+    this.deliveryGuyPhone = d.getDeliveryGuyPhone();
 }
 
 

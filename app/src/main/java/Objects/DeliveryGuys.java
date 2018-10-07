@@ -13,9 +13,13 @@ public class DeliveryGuys {
     double longtitude = 0;
     String picture = "";
     String index_string = "";
+    double salary;
+    long index;
+    String phone = "";
     Boolean is_active = true;
 
-    public DeliveryGuys(String name, String timeBeFree, ArrayList<Delivery> deliveries, double latetude, double longtitude, String picture,String index_string,Boolean is_active) {
+    public DeliveryGuys(String name, String timeBeFree, ArrayList<Delivery> deliveries, double latetude, double longtitude, String picture,String index_string,Boolean is_active,
+                        long index,double salary,String phone) {
         this.name = name;
         this.timeBeFree = timeBeFree;
         if (deliveries != null)
@@ -27,6 +31,9 @@ public class DeliveryGuys {
         this.picture = picture;
         this.index_string = index_string;
         this.is_active = is_active;
+        this.index = index;
+        this.salary = salary;
+        this.phone = phone;
     }
     public DeliveryGuys(){}
 
@@ -40,6 +47,33 @@ public class DeliveryGuys {
         this.picture = d.getPicture();
         this.index_string = d.getIndex_string();
         this.is_active = d.getIs_active();
+        this.index = d.getIndex();
+        this.salary = d.getSalary();
+        this.phone = d.getPhone();
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public double getSalary() {
+        return salary;
+    }
+
+    public void setSalary(double salary) {
+        this.salary = salary;
+    }
+
+    public long getIndex() {
+        return index;
+    }
+
+    public void setIndex(long index) {
+        this.index = index;
     }
 
     public ArrayList<Delivery> getDeliveries() {
