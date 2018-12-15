@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_web_client_id" translatable="false">464053191821-a9poqrb8qirp42l72pk9ahho9a3ks96b.apps.googleusercontent.com</string>
+    <string name="firebase_database_url" translatable="false">https://jetpack-f6617.firebaseio.com</string>
+    <string name="gcm_defaultSenderId" translatable="false">464053191821</string>
+    <string name="google_api_key" translatable="false">AIzaSyBzA_cf56CDNPEi-eDgW-CVgXdfCDt0XTk</string>
+    <string name="google_app_id" translatable="false">1:464053191821:android:17a0a97c6c01e863</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyBzA_cf56CDNPEi-eDgW-CVgXdfCDt0XTk</string>
+    <string name="google_storage_bucket" translatable="false">jetpack-f6617.appspot.com</string>
+    <string name="project_id" translatable="false">jetpack-f6617</string>
+</resources>
