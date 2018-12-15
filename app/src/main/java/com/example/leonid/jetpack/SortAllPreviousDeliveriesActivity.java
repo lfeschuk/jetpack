@@ -13,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -229,6 +230,38 @@ public class SortAllPreviousDeliveriesActivity extends AppCompatActivity impleme
     public void itemClicked(Delivery delivery) {
 
     }
+
+    @Override
+    public void itemClicked(String index, View parent) {
+
+    }
+
+    @Override
+    public void itemLongClick(String index, View tv_marked) {
+
+    }
+
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // this takes the user 'back', as if they pressed the left-facing
+                Log.d(TAG,"on back pressed");
+                finish();
+//                triangle icon on the main android toolbar.
+//                    // if this doesn't work as desired, another possibility is to call
+//
+//                            stopActivityTask();  // finish() here.
+//                getActivity().onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+
 
     @Override
     public void handleDialogClose(Boolean is_first,String date) {

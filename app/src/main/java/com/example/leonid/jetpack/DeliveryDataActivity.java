@@ -1,15 +1,20 @@
 package com.example.leonid.jetpack;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.MenuInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -24,26 +29,25 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 
 import Objects.DataBaseManager;
+import Objects.DelayedDelivery;
 import Objects.Delivery;
 import Objects.DeliveryGuys;
 import Objects.Destination;
-
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
 
 public class DeliveryDataActivity extends AppCompatActivity  implements PopupMenu.OnMenuItemClickListener
 {
     DataBaseManager dbm = new DataBaseManager();
      public Delivery clicked_delivery = null;
      public DeliveryGuys deliveryDuyWithDeletedDelivery = null;
-    private  Toolbar toolbar;
+    protected  Toolbar toolbar;
+    ArrayList<String> selected_indeces ;
+    private static final int REQUEST_PHONE_CALL = 1;
+    private Delivery d = null;
     public static final String TAG = "DeliveryDataActivity";
-    private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+    protected DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG,"on create start");
@@ -57,7 +61,12 @@ public class DeliveryDataActivity extends AppCompatActivity  implements PopupMen
 
         Bundle b = getIntent().getExtras();
         String delivery_key = b.getString("Delivery_Index");
-        Log.d(TAG,"after intent");
+        selected_indeces = b.getStringArrayList("selected_indeces");
+//        if (delivery_key == null || delivery_key.equals(""))
+//        {
+//            delivery_key = selected_indeces.get(0);
+//        }
+        Log.d(TAG,"after intent deliv key:" + delivery_key);
         mDatabase =  FirebaseDatabase.getInstance().getReference("Deliveries");
         mDatabase.child(delivery_key).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -67,7 +76,9 @@ public class DeliveryDataActivity extends AppCompatActivity  implements PopupMen
                 clicked_delivery = temp;
                 TextView title = findViewById(R.id.main_title_text);
                 title.setText("#" + clicked_delivery.getIndexString());
-                set_delivery_table(temp);
+                d = temp;
+                set_delivery_table();
+                set_buttons();
             }
 
             @Override
@@ -78,7 +89,7 @@ public class DeliveryDataActivity extends AppCompatActivity  implements PopupMen
 
 
     }
-    void set_delivery_table(final Delivery d)
+    void set_delivery_table()
     {
         Button pick_hour = findViewById(R.id.pick_hour_button); //do something later
 
@@ -275,28 +286,46 @@ public class DeliveryDataActivity extends AppCompatActivity  implements PopupMen
 
             }
         });
+
+
+
+    }
+    //is called from status 0 or delete
+    public void end_delivery_button_flow()
+    {
+        Log.d(TAG,"send to database " + d.getApartment() +"is deleted " + clicked_delivery.getIs_deleted());
+
+        if(d.getIs_deleted())
+        {
+            Log.d(TAG,"remove delivery guy");
+            dbm.deleteDelivery(d);
+            //need to differe betweeen deleted and not deleted
+            //   dbm.writeDeliveryDeleted(d);
+        }
+        else{
+            Log.d(TAG,"write delivery");
+            dbm.setStatusA(d);
+
+        }
+        if (deliveryDuyWithDeletedDelivery != null)
+        {
+            Log.d(TAG,"remove deliv guy");
+            dbm.writeDeliveryGuy(deliveryDuyWithDeletedDelivery);
+            deliveryDuyWithDeletedDelivery = null;
+        }
+        findViewById(R.id.success_text_buttom).setVisibility(View.VISIBLE);
+        Intent intent = new Intent(DeliveryDataActivity.this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
+    }
+    public void set_buttons()
+    {
         Button end_delivery_change_button = findViewById(R.id.end_delivery_change_button);
         end_delivery_change_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG,"send to database " + d.getApartment() +"is deleted " + clicked_delivery.getIs_deleted());
-                if (deliveryDuyWithDeletedDelivery != null)
-                {
-                    dbm.writeDeliveryGuy(deliveryDuyWithDeletedDelivery);
-                    deliveryDuyWithDeletedDelivery = null;
-                }
-                if(d.getIs_deleted())
-                {
-                    dbm.deleteDelivery(d);
-                }
-                else{
-                    dbm.writeDelivery(d);
-                }
-                findViewById(R.id.success_text_buttom).setVisibility(View.VISIBLE);
-                Intent intent = new Intent(DeliveryDataActivity.this, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                finish();
+                end_delivery_button_flow();
             }
         });
 
@@ -332,14 +361,96 @@ public class DeliveryDataActivity extends AppCompatActivity  implements PopupMen
             public void onClick(View view) {
                 Intent intent = new Intent(DeliveryDataActivity.this, ActiveDeliveryGuysActivity.class);
                 Bundle b = new Bundle();
-                b.putString("Delivery_Index",d.getIndexString());
+                b.putStringArrayList("selected_indeces",selected_indeces);
+                b.putString("Delivery_Key",d.getKey());
                 intent.putExtras(b); //Put your id to your next Intent
                 startActivity(intent);
             }
         });
+        Button call = findViewById(R.id.button_call);
+        call.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (ContextCompat.checkSelfPermission(DeliveryDataActivity.this, android.Manifest.permission.CALL_PHONE)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(DeliveryDataActivity.this, new String[]{android.Manifest.permission.CALL_PHONE},
+                            REQUEST_PHONE_CALL);
+                }
+                PopupMenu popup = new PopupMenu(DeliveryDataActivity.this, view);
+                // Inflate the menu from xml
+                popup.getMenuInflater().inflate(R.menu.popup_call, popup.getMenu());
+                final Menu popupMenu = popup.getMenu();
+                if (clicked_delivery.getStatus().equals("A"))
+                {
+                    popupMenu.findItem(R.id.two).setEnabled(false);
+                }
+                else
+                {
+                    popupMenu.findItem(R.id.two).setEnabled(true);
+                }
 
 
+                // Setup menu item selection
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            //restoraunt
+                            case R.id.one:
+                                if (ContextCompat.checkSelfPermission(DeliveryDataActivity.this, android.Manifest.permission.CALL_PHONE)
+                                        != PackageManager.PERMISSION_GRANTED) {
+                                    ActivityCompat.requestPermissions(DeliveryDataActivity.this, new String[]{Manifest.permission.CALL_PHONE},
+                                            REQUEST_PHONE_CALL);
+                                }
+
+                                Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + clicked_delivery.getRestoraunt_phone() ));
+                                startActivity(intent);
+                                return true;
+                            //deliverty guy
+                            case R.id.two:
+                                intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + clicked_delivery.getDeliveryGuyPhone()));
+                                startActivity(intent);
+                                return true;
+                            default:
+                                return false;
+                        }
+                    }
+                });
+                // Handle dismissal with: popup.setOnDismissListener(...);
+                // Show the menu
+                popup.show();
+//                else
+//                {
+//                    Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + chosen_delivery_guy.getPhone() ));
+//                    startActivity(intent);
+//                }
+            }
+        });
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // this takes the user 'back', as if they pressed the left-facing
+                Log.d(TAG,"on back pressed");
+                finish();
+//                triangle icon on the main android toolbar.
+//                    // if this doesn't work as desired, another possibility is to call
+//
+//                            stopActivityTask();  // finish() here.
+//                getActivity().onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 
 
     @Override
@@ -347,50 +458,86 @@ public class DeliveryDataActivity extends AppCompatActivity  implements PopupMen
         Toast.makeText(this, "Selected Item: " +item.getTitle(), Toast.LENGTH_SHORT).show();
         switch (item.getItemId()) {
             case R.id.cancel_order:
-                if (clicked_delivery.getIs_deleted())
-                {
-                    clicked_delivery.setIs_deleted(false);
-                    Toast.makeText(this, "לחץ על סיום כדי להחזיר משלוח", Toast.LENGTH_SHORT).show();
+
+            clicked_delivery.setIs_deleted(true);
+            //will delete it as well
+                if (!clicked_delivery.getStatus().equals("A")) {
+                    get_assigned_Deliv_guy_and_set_status_A(clicked_delivery.getDelivery_guy_index_assigned());
                 }
                 else
                 {
-                    clicked_delivery.setIs_deleted(true);
-                    Toast.makeText(this, "לחץ על סיום כדי לבטל משלוח", Toast.LENGTH_SHORT).show();
+                    end_delivery_button_flow();
                 }
+
+
+
+
                 return true;
 
             case R.id.change_status:
                 clicked_delivery.setStatus("A");
-                Query q =  FirebaseDatabase.getInstance().getReference("Delivery_Guys").orderByChild("index_string").equalTo(clicked_delivery.getDelivery_guy_index_assigned());
-                q.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for(DataSnapshot ds : dataSnapshot.getChildren())
-                        {
-                            DeliveryGuys temp = new DeliveryGuys(ds.getValue(DeliveryGuys.class));
-
-                           for (Delivery d : temp.getDeliveries())
-                           {
-                               if (d.getIndexString().equals(clicked_delivery.getIndexString()))
-                               {
-                                   temp.getDeliveries().remove(d);
-                                   break;
-                               }
-                           }
-                            deliveryDuyWithDeletedDelivery = temp;
-                           Log.d(TAG,"remove delivery: " + clicked_delivery.getIndexString() +" from guy: " + temp.getName());
-                        }
-
-                    }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        System.out.println("The read failed: " + databaseError.getCode());
-                    }
-                });
-                clicked_delivery.setDelivery_guy_index_assigned("");
+                get_assigned_Deliv_guy_and_set_status_A(clicked_delivery.getDelivery_guy_index_assigned());
                 return true;
             default:
                 return false;
         }
     }
+    public void get_assigned_Deliv_guy_and_set_status_A(String index)
+    {
+        Query q =  FirebaseDatabase.getInstance().getReference("Delivery_Guys").child(index);
+        q.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists())
+                {
+
+                    DeliveryGuys temp = new DeliveryGuys(dataSnapshot.getValue(DeliveryGuys.class));
+                    set_statusA(temp,true);
+
+                }
+
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
+    }
+    public void set_statusA(DeliveryGuys temp,Boolean to_end)
+    {
+        for (Delivery d : temp.getDeliveries())
+        {
+            if (d.getIndexString().equals(clicked_delivery.getIndexString()))
+            {
+                temp.getDeliveries().remove(d);
+
+                break;
+            }
+        }
+        Destination temp_to_remove = null;
+        for (Destination d : temp.getDestinations())
+        {
+            if (temp_to_remove != null)
+            {
+                temp.getDestinations().remove(temp_to_remove);
+                temp_to_remove = null;
+            }
+            if (d.getIndex_string().equals(clicked_delivery.getIndexString()))
+            {
+                temp_to_remove = d;
+            }
+        }
+        if (temp_to_remove != null)
+        {
+            temp.getDestinations().remove(temp_to_remove);
+        }
+        deliveryDuyWithDeletedDelivery = temp;
+        clicked_delivery.setDelivery_guy_index_assigned("");
+        if (to_end) {
+            end_delivery_button_flow();
+        }
+        Log.d(TAG,"remove delivery: " + clicked_delivery.getIndexString() +" from guy: " + temp.getName());
+    }
+
+
 }

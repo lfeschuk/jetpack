@@ -10,6 +10,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+
 public  class DataBaseManager {
     private  DatabaseReference mDatabase ;
      static final String TAG = "DataBaseManager";
@@ -21,11 +23,17 @@ public  class DataBaseManager {
     public DatabaseReference getmDatabase() {
         return mDatabase;
     }
+    public  void setStatusA(Delivery delivery)
+    {
 
+        mDatabase.child("Deliveries").child(delivery.getKey()).child("delivery_guy_index_assigned").setValue("");
+        mDatabase.child("Deliveries").child(delivery.getKey()).child("status").setValue("A");
+
+    }
   public  void writeDelivery(Delivery delivery)
     {
         Log.d(TAG,"writeDelivery deliveryName: " +delivery.getBusiness_name() + " delivery assign guy: " + delivery.getDeliveryGuyName());
-        mDatabase.child("Deliveries").child(delivery.getIndexString()).setValue(delivery);
+        mDatabase.child("Deliveries").child(delivery.getKey()).setValue(delivery);
     }
     public  void writeDeliveryForGas(Delivery delivery)
     {
@@ -41,6 +49,11 @@ public  class DataBaseManager {
     {
         Log.d(TAG,"writeDeliveryGuy deliveryGuyName: " +deliveryGuys.getName());
         mDatabase.child("Delivery_Guys").child(deliveryGuys.getIndex_string()).setValue(deliveryGuys);
+    }
+    public  void writeDeliveryDestArray(DeliveryGuys deliveryGuys, ArrayList<Destination> array)
+    {
+        Log.d(TAG,"writeDeliveryGuy deliveryGuyName: " +deliveryGuys.getName());
+        mDatabase.child("Delivery_Guys").child(deliveryGuys.getIndex_string()).child("destinations").setValue(array);
     }
     public  void writeUserAdmin(UserAdmin ua)
     {
@@ -81,18 +94,23 @@ public  class DataBaseManager {
     public void remove_delivery_from_dguy(String index_string_guy, final String index_string_delivery)
     {
         Log.d(TAG,"remove_delivery_from_dguy + guy: " + index_string_guy + " deliv: " + index_string_delivery);
-        Query q2 =  FirebaseDatabase.getInstance().getReference("Delivery_Guys").orderByChild("index_string").equalTo(index_string_guy);
-        q2.addValueEventListener(new ValueEventListener() {
+        DatabaseReference q2 =  FirebaseDatabase.getInstance().getReference("Delivery_Guys").child(index_string_guy);
+        q2.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot ds : dataSnapshot.getChildren())
-                {
-                    DeliveryGuys temp = new DeliveryGuys(ds.getValue(DeliveryGuys.class));
-                    Log.d(TAG,"deliveries array size "+ temp.getDeliveries().size() );
-                    temp.removeDelivery(index_string_delivery);
-                    writeDeliveryGuy(temp);
-                    Log.d(TAG,"remove_delivery_from_dguy DeliveryGuy is :  " + temp.getIndex_string());
-                }
+               if (dataSnapshot.exists()) {
+                   DeliveryGuys temp = new DeliveryGuys(dataSnapshot.getValue(DeliveryGuys.class));
+                   Log.d(TAG, "deliveries array size " + temp.getDeliveries().size());
+                   temp.removeDelivery(index_string_delivery);
+                   temp.removeDestination(index_string_delivery);
+                   writeDeliveryGuy(temp);
+                   Log.d(TAG, "remove_delivery_from_dguy DeliveryGuy is :  " + temp.getIndex_string());
+               }
+               else
+               {
+                   Log.e(TAG,"cant find delivery guy ERROR");
+               }
+
 
             }
             @Override
@@ -101,6 +119,7 @@ public  class DataBaseManager {
             }
         });
     }
+
     public void writeMessage()
     {
         mDatabase.setValue("Hello, World!");
@@ -108,7 +127,8 @@ public  class DataBaseManager {
     public void deleteDelivery(Delivery delivery)
     {
         String index = delivery.getIndexString();
-        mDatabase.child("Deliveries").removeValue();
+        mDatabase.child("Deliveries").child(delivery.getKey()).removeValue();
         Log.d(TAG,"remove Delivery: " + index);
     }
+
 }

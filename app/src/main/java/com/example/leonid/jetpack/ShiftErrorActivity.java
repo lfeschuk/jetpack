@@ -13,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -74,8 +75,7 @@ public class ShiftErrorActivity extends AppCompatActivity  implements AdapterVie
         recyclerView.addItemDecoration(horizontalDecoration);
         b_date_to = findViewById(R.id.button_date_to);
         b_date_from = findViewById(R.id.button_date_from);
-       FloatingActionButton fab = findViewById(R.id.fab);
-       fab.setVisibility(View.GONE);
+
         restoraunt_to_disp.add(chosen_restoraunt);
         retrieve_list_of_restoraunts();
         set_other_UI();
@@ -88,6 +88,25 @@ public class ShiftErrorActivity extends AppCompatActivity  implements AdapterVie
         Log.d(TAG,"after intent");
 
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // this takes the user 'back', as if they pressed the left-facing
+                Log.d(TAG,"on back pressed");
+                finish();
+//                triangle icon on the main android toolbar.
+//                    // if this doesn't work as desired, another possibility is to call
+//
+//                            stopActivityTask();  // finish() here.
+//                getActivity().onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     public void retrieve_list_of_restoraunts()
     {
         Query mDatabase =  FirebaseDatabase.getInstance().getReference("Restoraunt");

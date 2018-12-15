@@ -22,6 +22,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.leonid.jetpack.adapters.recycleAdapterDeliveries;
@@ -38,6 +39,8 @@ import com.google.firebase.database.ValueEventListener;
 //import com.here.android.mpa.search.GeocodeRequest;
 //import com.here.android.mpa.search.ResultListener;
 
+import org.w3c.dom.Text;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +48,9 @@ import java.util.List;
 
 import Objects.DataBaseManager;
 import Objects.Delivery;
+import Objects.DeliveryGuys;
 import Objects.DeliveryGuysShift;
+import Objects.Destination;
 import Objects.GasStation;
 import Objects.Packages;
 import Objects.Restoraunt;
@@ -68,6 +73,10 @@ DrawerLayout dLayout;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private static final String BACK_STACK_ROOT_TAG = "root_fragment";
     private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
+    private static final int REQUEST_ID_READ_PERMISSION = 100;
+    private static final int REQUEST_ID_WRITE_PERMISSION = 200;
+
+
 
 
 public static final String TAG = "MainActivity";
@@ -127,8 +136,14 @@ DataBaseManager dbm = new DataBaseManager();
 //                 31.893120,34.960698,31.895772,35.016540,"");
 //        dbm.writeDelivery(delivery);
        // dbm.writeMessage();
-//        DeliveryGuys deliveryGuy = new DeliveryGuys("לאוניד","12:00",null,123456,123456,"please be hurry","1",true);
+//          public DeliveryGuys(String name, String timeBeFree, ArrayList<Delivery> deliveries, double latetude, double longtitude, String picture,String index_string,Boolean is_active,
+//        long index,double salary,String phone,Boolean sent_start_shift_report) {
+//        String name, String timeBeFree, ArrayList<Delivery> deliveries, double latetude, double longtitude, String picture,String index_string,Boolean is_active,
+//        long index,double salary,String phone,Boolean sent_start_shift_report,ArrayList< Destination > destinations
+//        DeliveryGuys deliveryGuy = new DeliveryGuys("לאוניד","12:00",new ArrayList<Delivery>(),  31.893120,34.960698,"please be hurry","3",true,3,30,"0525410912",true,new ArrayList<Destination>());
 //         dbm.writeDeliveryGuy(deliveryGuy);
+//        DeliveryGuys deliveryGuy2 = new DeliveryGuys("אביאל קוגן","12:00",new ArrayList<Delivery>(),  31.893120,34.960698,"please be hurry","4",true,4,30,"0525641938",true,new ArrayList<Destination>());
+//        dbm.writeDeliveryGuy(deliveryGuy2);
 //        Uri gmmIntentUri = Uri.parse("google.navigation:q=" + 31.8903 + "," +  35.0104 + "&mode=w");
 //        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
 //        mapIntent.setPackage("com.google.android.apps.maps");
@@ -146,6 +161,23 @@ DataBaseManager dbm = new DataBaseManager();
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // this takes the user 'back', as if they pressed the left-facing
+            Log.d(TAG,"on back pressed");
+            finish();
+//                triangle icon on the main android toolbar.
+//                    // if this doesn't work as desired, another possibility is to call
+//
+//                            stopActivityTask();  // finish() here.
+//                getActivity().onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
 
@@ -272,6 +304,18 @@ DataBaseManager dbm = new DataBaseManager();
 
     }
 
+    @Override
+    public void itemClicked(String index, View parent) {
+
+    }
+
+    @Override
+    public void itemLongClick(String index, View tv_marked) {
+
+    }
+
+
+
     class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
@@ -314,13 +358,14 @@ DataBaseManager dbm = new DataBaseManager();
 // check selected menu item's id and replace a Fragment Accordingly
                 //refresh
                 if (itemId == R.id.nav_1) {
-                    frag = new FirstFragment();
+                    frag = null;
                     //deliveries oin road
                 } else if (itemId == R.id.nav_2) {
                     frag = null;
                     Log.d(TAG,"maps checked");
+                    //delayed
                 } else if (itemId == R.id.nav_3) {
-                    frag = new DelayedDeliveryFragment();
+                    frag = null;
                     //sort deliveries
                 } else if (itemId == R.id.nav_4) {
                     frag = null;
@@ -366,10 +411,28 @@ DataBaseManager dbm = new DataBaseManager();
                     dLayout.closeDrawers(); // close the all open Drawer Views
                     return true;
                 }
+                else if(itemId == R.id.nav_1 )
+                {
+                    dLayout.closeDrawers(); // close the all open Drawer Views
+                    Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    startActivity(intent);
+                }
                 else if(itemId == R.id.nav_2 )
                 {
                     dLayout.closeDrawers(); // close the all open Drawer Views
-                    Intent intent = new Intent(MainActivity.this, MapsActivity.class);
+                    Intent intent = new Intent(MainActivity.this, MapsActivityNew.class);
+//                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    startActivity(intent);
+                }
+                else if (itemId == R.id.nav_3)
+                {
+                    dLayout.closeDrawers(); // close the all open Drawer Views
+                    Intent intent = new Intent(MainActivity.this, DelayedDeliveryActivity.class);
 //                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 //                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
 //                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);

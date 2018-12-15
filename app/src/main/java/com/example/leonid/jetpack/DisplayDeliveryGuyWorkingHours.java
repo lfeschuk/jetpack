@@ -255,6 +255,10 @@ public class DisplayDeliveryGuyWorkingHours extends AppCompatActivity implements
     }
     @Override
     public void handleDialogClose(Boolean is_first, String date) {
+        if(date == null)
+        {
+            return;
+        }
         if (is_first)
         {
             date_done_first = true;

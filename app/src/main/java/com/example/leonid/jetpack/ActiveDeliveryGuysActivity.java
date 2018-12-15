@@ -12,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -41,6 +42,7 @@ public class ActiveDeliveryGuysActivity extends AppCompatActivity  implements re
     public Delivery clicked_delivery = null;
     private ArrayList<DeliveryGuys> array = new ArrayList<>();
     private RecyclerView recyclerView;
+    ArrayList<String> selected_indeces;
     String delivery_key;
     ActiveDeliveryGuysActivity this_context = this;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -65,7 +67,21 @@ public class ActiveDeliveryGuysActivity extends AppCompatActivity  implements re
         horizontalDecoration.setDrawable(horizontalDivider);
         recyclerView.addItemDecoration(horizontalDecoration);
 
-
+        Bundle b = getIntent().getExtras();
+        delivery_key = b.getString("Delivery_Key");
+        String delivery_guy_index = b.getString("Delivery_Guy_Index");
+        selected_indeces = b.getStringArrayList("selected_indeces");
+        //move to another activity
+        if (delivery_guy_index!= null && !delivery_guy_index.equals(""))
+        {
+            Bundle b2 = new Bundle();
+            Intent intent = new Intent(ActiveDeliveryGuysActivity.this, PendingDeliveriesForGuyActivity.class);
+            b2.putString("Delivery_Key",delivery_key);
+            b2.putString("Delivery_Guy_Index",delivery_guy_index);
+        //    Log.d(TAG,"onTouch send to another intent Delivery_Key: " + delivery_key +" Delivery_Guy_index: " +d.getIndex_string());
+            intent.putExtras(b); //Put your id to your next Intent
+            startActivity(intent);
+        }
 
         //query for active deliveries
         Query q =  FirebaseDatabase.getInstance().getReference("Delivery_Guys").orderByChild("is_active").equalTo(true);
@@ -79,7 +95,7 @@ public class ActiveDeliveryGuysActivity extends AppCompatActivity  implements re
                     Log.d(TAG,"DeliveryGuy is :  " + temp.getName());
                 }
                 Log.d(TAG,"Done retrieving DeliveryGuy " + array.size());
-                recycleAdapterDeliveryGuys adapter = new recycleAdapterDeliveryGuys(array, this_context);
+                recycleAdapterDeliveryGuys adapter = new recycleAdapterDeliveryGuys(array,FragmentDeliveryGuys.profile_array, this_context);
                 recyclerView.setAdapter(adapter);
             }
 
@@ -89,8 +105,7 @@ public class ActiveDeliveryGuysActivity extends AppCompatActivity  implements re
             }
         });
 
-        Bundle b = getIntent().getExtras();
-        delivery_key = b.getString("Delivery_Index");
+
     }
 
     @Override
@@ -98,14 +113,35 @@ public class ActiveDeliveryGuysActivity extends AppCompatActivity  implements re
         super.onBackPressed();
         finish();
     }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // this takes the user 'back', as if they pressed the left-facing
+                Log.d(TAG,"on back pressed");
+                finish();
+//                triangle icon on the main android toolbar.
+//                    // if this doesn't work as desired, another possibility is to call
+//
+//                            stopActivityTask();  // finish() here.
+//                getActivity().onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 
     @Override
     public void itemClicked(DeliveryGuys d) {
+
         Bundle b = new Bundle();
         Intent intent = new Intent(ActiveDeliveryGuysActivity.this, PendingDeliveriesForGuyActivity.class);
-        b.putString("Delivery_Index",delivery_key);
+        b.putString("Delivery_Key",delivery_key);
         b.putString("Delivery_Guy_Index",d.getIndex_string());
-        Log.d(TAG,"onTouch send to another intent Delivery_Index: " + delivery_key +" Delivery_Guy_index: " +d.getIndex_string());
+        b.putStringArrayList("selected_indeces",selected_indeces);
+
+        Log.d(TAG,"onTouch send to another intent Delivery_Key: " + delivery_key +" Delivery_Guy_index: " +d.getIndex_string());
         intent.putExtras(b); //Put your id to your next Intent
         startActivity(intent);
 //                d.addDelivery(clicked_delivery);

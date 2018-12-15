@@ -20,8 +20,11 @@
 
         <TextView
             android:id="@+id/index_delivery_routes"
-            android:layout_width="94dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_marginStart="6dp"
+            android:layout_marginEnd="6dp"
+            android:gravity="right"
             android:layout_weight="1"
             android:text="aaa"
             />
@@ -30,7 +33,10 @@
             android:id="@+id/time_of_order_routes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_marginStart="4dp"
+            android:gravity="right"
+            android:layout_marginEnd="4dp"
+            android:layout_weight="2"
             android:text="fff"
             />
 
@@ -38,7 +44,11 @@
             android:id="@+id/time_to_destination_routes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp"
+            android:gravity="right"
+            android:visibility="gone"
+            android:layout_weight="2"
             android:text="uuu"
             />
 
@@ -52,8 +62,11 @@
 
         <TextView
             android:id="@+id/addresses_routes"
-            android:layout_width="238dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_marginEnd="6dp"
+            android:gravity="right"
             android:layout_weight="1"
             android:text="sss" />
 
@@ -69,8 +82,11 @@
 
         <TextView
             android:id="@+id/from_where_the_delivery_routes"
-            android:layout_width="94dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_marginStart="6dp"
+            android:layout_marginEnd="6dp"
+            android:gravity="right"
             android:visibility="gone"
             android:layout_weight="1"
             />

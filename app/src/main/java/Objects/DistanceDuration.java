@@ -26,14 +26,25 @@ public class DistanceDuration {
     public PendingDeliveriesForGuyActivity ac;
     public static int count = 0;
     public int size;
+    Delivery to_assign_delivery;
+    Boolean update_delivery_guy_with_moved_delivery;
+    String index_index_update_Delivery_guy;
+
     public String curr_url = "";
-    public void start_duration_exec(  LatLng origin,  LatLng dest ,PendingDeliveriesForGuyActivity callback_activity,int size)
+    Boolean update_db_after_assign;
+
+    public void start_duration_exec(  LatLng origin,  LatLng dest ,PendingDeliveriesForGuyActivity callback_activity,Boolean update_db_after_assign,int size,Delivery to_assign_delivery
+            ,Boolean update_delivery_guy_with_moved_delivery,String index_index_update_Delivery_guy)
     {
         Log.d(TAG,"start exec lat1: " +origin.latitude + " long1: " +origin.longitude + " lat2: " +dest.latitude + " long2: "+ dest.longitude);
         this.size = size;
         ac = callback_activity;
+        this.update_db_after_assign = update_db_after_assign;
         String url = getDirectionsUrl(origin, dest);
         curr_url = url;
+        this.to_assign_delivery = to_assign_delivery;
+        this.update_delivery_guy_with_moved_delivery = update_delivery_guy_with_moved_delivery;
+        this.index_index_update_Delivery_guy = index_index_update_Delivery_guy;
 
         DistanceDuration.DownloadTask downloadTask = new DistanceDuration.DownloadTask();
 
@@ -74,8 +85,11 @@ public class DistanceDuration {
 // Output format
         String output = "json";
 
+        String key = "&key=" + "AIzaSyDoRFQVaeh76RYJnlfQpCpuATe2xqmfcAI";
+
 // Building the url to the web service
-        String url = "https://maps.googleapis.com/maps/api/directions/"+output+"?"+parameters;
+        String url = "https://maps.googleapis.com/maps/api/directions/"+output+"?"+parameters+key;
+        Log.d(TAG,"url: " + url);
 
         return url;
     }
@@ -155,6 +169,7 @@ public class DistanceDuration {
             try{
 // Fetching the data from web service
                 data = downloadUrl(url[0]);
+                Log.d(TAG,"data:" +data);
             }catch(Exception e){
                 Log.d("Background Task",e.toString());
             }
@@ -179,6 +194,7 @@ public class DistanceDuration {
     /** A class to parse the Google Places in JSON format */
     public class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String,String>>> >{
 
+        int a = 0;
         // Parsing the data in non-ui thread
         @Override
         protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
@@ -207,14 +223,29 @@ public class DistanceDuration {
 //            MarkerOptions markerOptions = new MarkerOptions();
             String distance = "";
             String duration = "";
+
             Log.d(TAG,"ParserTask");
             if(result.size()<1){
-                Toast.makeText(ac, "No Points", Toast.LENGTH_SHORT).show();
-                Log.d(TAG,"execute another time");
-                DistanceDuration.DownloadTask downloadTask = new DistanceDuration.DownloadTask();
-
-// Start downloading json data from Google Directions API
-                downloadTask.execute(curr_url);
+//                a++;
+                Log.d(TAG,"ff");
+                count++;
+                setDuration(999);
+                Toast.makeText(ac, "שים לב כי חישוב זמן אינו נכון, ייתכן כי השליח לא הפעיל את שרותי המיקום", Toast.LENGTH_LONG).show();
+//                if (a >= 5)
+//                {
+//                    return;
+//                }
+                if (count == getSize() )
+                {
+                    count = 0;
+                    ac.updateUiCallback(update_db_after_assign,to_assign_delivery,update_delivery_guy_with_moved_delivery,index_index_update_Delivery_guy);
+                }
+//                Toast.makeText(ac, "No Points", Toast.LENGTH_SHORT).show();
+//                Log.d(TAG,"execute another time");
+//                DistanceDuration.DownloadTask downloadTask = new DistanceDuration.DownloadTask();
+//
+//// Start downloading json data from Google Directions API
+//                downloadTask.execute(curr_url);
                 return;
             }
 
@@ -274,10 +305,10 @@ public class DistanceDuration {
             Log.d(TAG, "out duration: " + out_duration  + "count " + count + " size " + getSize());
             setDuration(out_duration);
             count++;
-            if (count == getSize())
+            if (count == getSize() )
             {
                 count = 0;
-                ac.updateUiCallback();
+                ac.updateUiCallback(update_db_after_assign,to_assign_delivery,update_delivery_guy_with_moved_delivery,index_index_update_Delivery_guy);
             }
 
             //  tvDistanceDuration.setText("Distance:"+distance + ", Duration:"+duration);

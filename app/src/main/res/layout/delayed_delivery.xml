@@ -1,12 +1,19 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DelayedDeliveryFragment">
+    >
+    <include layout="@layout/toolbar"
+        android:id="@+id/include"
+        />
+
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        android:layout_marginTop="50dp"
+
+        android:id="@+id/scrollView">
 
     <TableLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -16,7 +23,7 @@
         android:shrinkColumns="*"
         android:stretchColumns="*">
         <TableRow
-            android:id="@+id/tableRow0"
+            android:id="@+id/tableRow"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             android:gravity="center_horizontal">
@@ -95,28 +102,26 @@
                 android:text="10:30"
                 android:textStyle="bold"></TextView>
             <TextView
-                android:id="@+id/sunday_10_30"
+                android:id="@+id/delay_11"
 
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:text="פיצה עגבניה\n10:40"
-                android:id="@+id/monday_10_30"
+                android:id="@+id/delay_12"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/thuesday_10_30"
+                android:id="@+id/delay_13"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/wednesday_10_30"
+                android:id="@+id/delay_14"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/thurstday_10_30"
+                android:id="@+id/delay_15"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:text="פיצה עגבניה\n10:40"
-                android:id="@+id/friday_10_30"
+                android:id="@+id/delay_16"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/saturday_10_30"
+                android:id="@+id/delay_17"
                 android:gravity="center_horizontal"></TextView>
         </TableRow>
         <TableRow
@@ -127,25 +132,25 @@
                 android:text="11:30"
                 android:textStyle="bold"></TextView>
             <TextView
-                android:id="@+id/sunday_11_30"
+                android:id="@+id/delay_21"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/monday_11_30"
+                android:id="@+id/delay_22"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/thuesday_11_30"
+                android:id="@+id/delay_23"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/wednesday_11_30"
+                android:id="@+id/delay_24"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/thurstday_11_30"
+                android:id="@+id/delay_25"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/friday_11_30"
+                android:id="@+id/delay_26"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/saturday_11_30"
+                android:id="@+id/delay_27"
                 android:gravity="center_horizontal"></TextView>
         </TableRow>
         <TableRow
@@ -156,25 +161,25 @@
                 android:text="12:30"
                 android:textStyle="bold"></TextView>
             <TextView
-                android:id="@+id/sunday_12_30"
+                android:id="@+id/delay_31"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/monday_12_30"
+                android:id="@+id/delay_32"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/thuesday_12_30"
+                android:id="@+id/delay_33"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/wednesday_12_30"
+                android:id="@+id/delay_34"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/thurstday_12_30"
+                android:id="@+id/delay_35"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/friday_12_30"
+                android:id="@+id/delay_36"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/saturday_12_30"
+                android:id="@+id/delay_37"
                 android:gravity="center_horizontal"></TextView>
         </TableRow>
         <TableRow
@@ -185,25 +190,25 @@
                 android:text="13:30"
                 android:textStyle="bold"></TextView>
             <TextView
-                android:id="@+id/sunday_13_30"
+                android:id="@+id/delay_41"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/monday_13_30"
+                android:id="@+id/delay_42"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/thuesday_13_30"
+                android:id="@+id/delay_43"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/wednesday_13_30"
+                android:id="@+id/delay_44"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/thurstday_13_30"
+                android:id="@+id/delay_45"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/friday_13_30"
+                android:id="@+id/delay_46"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/saturday_13_30"
+                android:id="@+id/delay_47"
                 android:gravity="center_horizontal"></TextView>
         </TableRow>
         <TableRow
@@ -214,27 +219,27 @@
                 android:text="14:30"
                 android:textStyle="bold"></TextView>
             <TextView
-                android:id="@+id/sunday_14_30"
+                android:id="@+id/delay_51"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/monday_14_30"
+                android:id="@+id/delay_52"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/thuesday_14_30"
+                android:id="@+id/delay_53"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/wednesday_14_30"
-                android:gravity="center_horizontal"></TextView>
-            <TextView
-
-                android:id="@+id/thurstday_14_30"
-                android:gravity="center_horizontal"></TextView>
-            <TextView
-                android:id="@+id/friday_14_30"
+                android:id="@+id/delay_54"
                 android:gravity="center_horizontal"></TextView>
             <TextView
 
-                android:id="@+id/saturday_14_30"
+                android:id="@+id/delay_55"
+                android:gravity="center_horizontal"></TextView>
+            <TextView
+                android:id="@+id/delay_56"
+                android:gravity="center_horizontal"></TextView>
+            <TextView
+
+                android:id="@+id/delay_57"
                 android:gravity="center_horizontal"></TextView>
         </TableRow>
         <TableRow
@@ -245,25 +250,25 @@
                 android:text="15:30"
                 android:textStyle="bold"></TextView>
             <TextView
-                android:id="@+id/sunday_15_30"
+                android:id="@+id/delay_61"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/monday_15_30"
+                android:id="@+id/delay_62"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/thuesday_15_30"
+                android:id="@+id/delay_63"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/wednesday_15_30"
+                android:id="@+id/delay_64"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/thurstday_15_30"
+                android:id="@+id/delay_65"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/friday_15_30"
+                android:id="@+id/delay_66"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/saturday_15_30"
+                android:id="@+id/delay_67"
                 android:gravity="center_horizontal"></TextView>
         </TableRow>
         <TableRow
@@ -274,25 +279,25 @@
                 android:text="16:30"
                 android:textStyle="bold"></TextView>
             <TextView
-                android:id="@+id/sunday_16_30"
+                android:id="@+id/delay_71"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/monday_16_30"
+                android:id="@+id/delay_72"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/thuesday_16_30"
+                android:id="@+id/delay_73"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/wednesday_16_30"
+                android:id="@+id/delay_74"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/thurstday_16_30"
+                android:id="@+id/delay_75"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/friday_16_30"
+                android:id="@+id/delay_76"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/saturday_16_30"
+                android:id="@+id/delay_77"
                 android:gravity="center_horizontal"></TextView>
         </TableRow>
         <TableRow
@@ -303,25 +308,25 @@
                 android:text="17:30"
                 android:textStyle="bold"></TextView>
             <TextView
-                android:id="@+id/sunday_17_30"
+                android:id="@+id/delay_81"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/monday_17_30"
+                android:id="@+id/delay_82"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/thuesday_17_30"
+                android:id="@+id/delay_83"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/wednesday_17_30"
+                android:id="@+id/delay_84"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/thurstday_17_30"
+                android:id="@+id/delay_85"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/friday_17_30"
+                android:id="@+id/delay_86"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/saturday_17_30"
+                android:id="@+id/delay_87"
                 android:gravity="center_horizontal"></TextView>
         </TableRow>
         <TableRow
@@ -332,25 +337,25 @@
                 android:text="18:30"
                 android:textStyle="bold"></TextView>
             <TextView
-                android:id="@+id/sunday_18_30"
+                android:id="@+id/delay_91"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/monday_18_30"
+                android:id="@+id/delay_92"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/thuesday_18_30"
+                android:id="@+id/delay_93"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/wednesday_18_30"
+                android:id="@+id/delay_94"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/thurstday_18_30"
+                android:id="@+id/delay_95"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/friday_18_30"
+                android:id="@+id/delay_96"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/saturday_18_30"
+                android:id="@+id/delay_97"
                 android:gravity="center_horizontal"></TextView>
         </TableRow>
         <TableRow
@@ -361,25 +366,25 @@
                 android:text="19:30"
                 android:textStyle="bold"></TextView>
             <TextView
-                android:id="@+id/sunday_19_30"
+                android:id="@+id/delay_101"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/monday_19_30"
+                android:id="@+id/delay_102"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/thuesday_19_30"
+                android:id="@+id/delay_103"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/wednesday_19_30"
+                android:id="@+id/delay_104"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/thurstday_19_30"
+                android:id="@+id/delay_105"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/friday_19_30"
+                android:id="@+id/delay_106"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/saturday_19_30"
+                android:id="@+id/delay_107"
                 android:gravity="center_horizontal"></TextView>
         </TableRow>
         <TableRow
@@ -390,25 +395,25 @@
                 android:text="20:30"
                 android:textStyle="bold"></TextView>
             <TextView
-                android:id="@+id/sunday_20_30"
+                android:id="@+id/delay_111"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/monday_20_30"
+                android:id="@+id/delay_112"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/thuesday_20_30"
+                android:id="@+id/delay_113"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/wednesday_20_30"
+                android:id="@+id/delay_114"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/thurstday_20_30"
+                android:id="@+id/delay_115"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/friday_20_30"
+                android:id="@+id/delay_116"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/saturday_20_30"
+                android:id="@+id/delay_117"
                 android:gravity="center_horizontal"></TextView>
         </TableRow>
         <TableRow
@@ -419,25 +424,25 @@
                 android:text="21:30"
                 android:textStyle="bold"></TextView>
             <TextView
-                android:id="@+id/sunday_21_30"
+                android:id="@+id/delay_121"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/monday_21_30"
+                android:id="@+id/delay_122"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/thuesday_21_30"
+                android:id="@+id/delay_123"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/wednesday_21_30"
+                android:id="@+id/delay_124"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/thurstday_21_30"
+                android:id="@+id/delay_125"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/friday_21_30"
+                android:id="@+id/delay_126"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/saturday_21_30"
+                android:id="@+id/delay_127"
                 android:gravity="center_horizontal"></TextView>
         </TableRow>
         <TableRow
@@ -448,25 +453,25 @@
                 android:text="22:30"
                 android:textStyle="bold"></TextView>
             <TextView
-                android:id="@+id/sunday_22_30"
+                android:id="@+id/delay_131"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/monday_22_30"
+                android:id="@+id/delay_132"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/thuesday_22_30"
+                android:id="@+id/delay_133"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/wednesday_22_30"
+                android:id="@+id/delay_134"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/thurstday_22_30"
+                android:id="@+id/delay_135"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/friday_22_30"
+                android:id="@+id/delay_136"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/saturday_22_30"
+                android:id="@+id/delay_137"
                 android:gravity="center_horizontal"></TextView>
         </TableRow>
         <TableRow
@@ -477,28 +482,30 @@
                 android:text="23:30"
                 android:textStyle="bold"></TextView>
             <TextView
-                android:id="@+id/sunday_23_30"
+                android:id="@+id/delay_141"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/monday_23_30"
+                android:id="@+id/delay_142"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/thuesday_23_30"
+                android:id="@+id/delay_143"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/wednesday_23_30"
+                android:id="@+id/delay_144"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/thurstday_23_30"
+                android:id="@+id/delay_145"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/friday_23_30"
+                android:id="@+id/delay_146"
                 android:gravity="center_horizontal"></TextView>
             <TextView
-                android:id="@+id/saturday_23_30"
+                android:id="@+id/delay_147"
                 android:gravity="center_horizontal"></TextView>
         </TableRow>
 
     </TableLayout>
     </ScrollView>
-</FrameLayout>
+
+
+</RelativeLayout>

@@ -1,8 +1,12 @@
 package com.example.leonid.jetpack.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.text.Spanned;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +28,7 @@ public class recycleAdapterRoutes extends RecyclerView.Adapter<recycleAdapterRou
 
     public recycleAdapterRoutes(ArrayList<Destination> objects, @NonNull ItemClickListener itemClickListener) {
         this.destinations = objects;
+        Log.d("routes","constr " + destinations.size());
         this.itemClickListener = itemClickListener;
         setHasStableIds(true);
     }
@@ -36,9 +41,10 @@ public class recycleAdapterRoutes extends RecyclerView.Adapter<recycleAdapterRou
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder, int position) {
+    public void onBindViewHolder(final ViewHolder viewHolder, int position) {
+       Log.d("routes","dest: " + destinations.size());
         final Destination d = destinations.get(position);
-        viewHolder.setIndex(d.getIndex_string());
+        viewHolder.setIndex(d.getIndex_string(),d.getMerged_indeces());
         viewHolder.setTime_of_order(d.getTimeInserted());
         viewHolder.setTime_to_destination(d.getTimeDeliver());
         viewHolder.setDeliveryAndAdresses(d.getTo_costumer(),d.getName_costumer(),d.getAdressTo(),d.getBusiness_name(),d.getAdressFrom());
@@ -46,9 +52,10 @@ public class recycleAdapterRoutes extends RecyclerView.Adapter<recycleAdapterRou
         viewHolder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                itemClickListener.itemClicked(d);
+                itemClickListener.itemClicked(d,viewHolder.parent);
             }
         });
+
     }
 
     @Override
@@ -67,6 +74,10 @@ public class recycleAdapterRoutes extends RecyclerView.Adapter<recycleAdapterRou
             Destination item = destinations.remove(min);
             destinations.add(max, item);
             notifyItemMoved(min, max);
+            itemClickListener.onItemMoved(item,min);
+            if (max - min > 1) {
+                itemClickListener.onItemMoved(item, max);
+            }
         }
     }
 
@@ -110,16 +121,35 @@ public class recycleAdapterRoutes extends RecyclerView.Adapter<recycleAdapterRou
         }
 
 
-        public void setIndex(CharSequence text) {
-            index_delivery.setText(text);
+        public void setIndex(CharSequence text,ArrayList<String> merged) {
+            Log.d("routes","fff");
+            String out = "#" + text;
+            for (String s: merged)
+            {
+                out+= "," + s;
+
+            }
+            index_delivery.setText(out);
+            index_delivery.setTextColor(Color.GREEN);
         }
 
-        public void setTime_of_order(CharSequence text) {
-            time_of_order.setText(text);
+        public void setTime_of_order(CharSequence text_arg) {
+            Spanned text2;
+            String text = "שעת הזמנה:" + "<b>" + text_arg + "</b>"  ;
+            text2 = Html.fromHtml(text);
+            time_of_order.setText(text2);
         }
 
-        public void setTime_to_destination(CharSequence text) {
-            time_to_destination.setText(text);
+        public void setTime_to_destination(CharSequence arrived_time) {
+            if (arrived_time.equals(""))
+            {
+                return;
+            }
+            Spanned text2;
+            String text = "סיום משוער:" + "<b>" + "<font color=\"#f73670\">" + arrived_time + "</font>" + "</b>"  ;
+            text2 = Html.fromHtml(text);
+            time_to_destination.setText(text2);
+            time_to_destination.setVisibility(View.VISIBLE);
         }
         public void setDeliveryAndAdresses(Boolean to_costumer,String costumer_name,String adressTo,String businessName,String adressFrom) {
             if (to_costumer)
@@ -134,7 +164,7 @@ public class recycleAdapterRoutes extends RecyclerView.Adapter<recycleAdapterRou
             else
             {
                 String adress_or_cost_name = "(" + adressFrom + ")";
-                addresses.setText(businessName + adress_or_cost_name);
+                addresses.setText("משלוח ל:"+businessName + adress_or_cost_name);
             }
         }
 
@@ -144,10 +174,13 @@ public class recycleAdapterRoutes extends RecyclerView.Adapter<recycleAdapterRou
 
         public void setOnClickListener(View.OnClickListener listener) {
             parent.setOnClickListener(listener);
+            parent.setBackgroundResource(R.drawable.layout_border);
+            Log.d("routes","ddddd");
         }
     }
 
     public interface ItemClickListener {
-        void itemClicked(Destination d);
+        void itemClicked(Destination d,View parent);
+        void onItemMoved(Destination d,int index);
     }
 }

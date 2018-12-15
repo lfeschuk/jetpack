@@ -459,7 +459,33 @@ android:layout_height="match_parent">
 
 
     </TableLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tableLayout_shift_status">
+
+        <Button
+            android:id="@+id/send"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_margin="20dp"
+            android:text="שלח" />
+
+        <Button
+            android:id="@+id/send_to_guy"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_margin="20dp"
+            android:text=" שלח לשליח" />
+
+    </LinearLayout>
 </android.support.constraint.ConstraintLayout>
     </ScrollView>
+
+
 
 </android.support.constraint.ConstraintLayout>

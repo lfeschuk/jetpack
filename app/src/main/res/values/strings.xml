@@ -28,4 +28,8 @@
     <string name="delivery_guy_shift">משמרות שליחים</string>
     <string name="choose_business_or_restoraunt">בחר סוג</string>
     <string name="show_restoraunt">בחר מסעדה</string>
+    <string name="add_delivery">הוסף משלוח</string>
+    <string name="get_restoraunts">בחר מסעדה</string>
+    <string name="title_activity_maps_new">Map</string>
+    <string name="enter_name">הכנס שם משתמש</string>
 </resources>

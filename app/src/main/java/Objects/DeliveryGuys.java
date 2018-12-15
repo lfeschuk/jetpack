@@ -4,22 +4,20 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-public class DeliveryGuys {
+public class DeliveryGuys extends DeliveryObject {
     public static final String TAG = "DeliveryGuys";
-    String name = "";
     String timeBeFree = "";
-   ArrayList<Delivery> deliveries = new ArrayList<>();
+    ArrayList<Delivery> deliveries = new ArrayList<>();
+    ArrayList<Destination> destinations = new ArrayList<>();
     double latetude = 0;
+    int num_of_deliveries = 0;
+    int num_of_packages = 0;
     double longtitude = 0;
-    String picture = "";
-    String index_string = "";
-    double salary;
-    long index;
-    String phone = "";
-    Boolean is_active = true;
+    Boolean sent_start_shift_report = false;
 
     public DeliveryGuys(String name, String timeBeFree, ArrayList<Delivery> deliveries, double latetude, double longtitude, String picture,String index_string,Boolean is_active,
-                        long index,double salary,String phone) {
+                        long index,double salary,String phone,Boolean sent_start_shift_report,ArrayList<Destination> destinations) {
+
         this.name = name;
         this.timeBeFree = timeBeFree;
         if (deliveries != null)
@@ -34,6 +32,8 @@ public class DeliveryGuys {
         this.index = index;
         this.salary = salary;
         this.phone = phone;
+        this.sent_start_shift_report = sent_start_shift_report;
+        this.destinations = destinations;
     }
     public DeliveryGuys(){}
 
@@ -50,31 +50,44 @@ public class DeliveryGuys {
         this.index = d.getIndex();
         this.salary = d.getSalary();
         this.phone = d.getPhone();
+        this.sent_start_shift_report = d.getSent_start_shift_report();
+        this.destinations = d.getDestinations();
+        this.num_of_deliveries = d.getNum_of_deliveries();
+        this.num_of_packages = d.getNum_of_packages();
     }
 
-    public String getPhone() {
-        return phone;
+    public int getNum_of_deliveries() {
+        return num_of_deliveries;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public int getNum_of_packages() {
+        return num_of_packages;
     }
 
-    public double getSalary() {
-        return salary;
+    public void setNum_of_deliveries(int num_of_deliveries) {
+        this.num_of_deliveries = num_of_deliveries;
     }
 
-    public void setSalary(double salary) {
-        this.salary = salary;
+    public void setNum_of_packages(int num_of_packages) {
+        this.num_of_packages = num_of_packages;
+    }
+    public ArrayList<Destination> getDestinations() {
+        return destinations;
     }
 
-    public long getIndex() {
-        return index;
+    public void setDestinations(ArrayList<Destination> destinations) {
+        this.destinations = destinations;
     }
 
-    public void setIndex(long index) {
-        this.index = index;
+    public Boolean getSent_start_shift_report() {
+        return sent_start_shift_report;
     }
+
+    public void setSent_start_shift_report(Boolean sent_start_shift_report) {
+        this.sent_start_shift_report = sent_start_shift_report;
+    }
+
+
 
     public ArrayList<Delivery> getDeliveries() {
         return deliveries;
@@ -90,41 +103,55 @@ public class DeliveryGuys {
     }
     public void removeDelivery(String delivery_index)
     {
+        Delivery to_remove = null;
         for (Delivery d : deliveries)
         {
+            if (to_remove != null)
+            {
+                deliveries.remove(to_remove);
+                to_remove = null;
+                return;
+            }
             Log.d(TAG,"iter indx: "+ d.getIndexString() + " wanted: " +delivery_index);
             if (d.getIndexString().equals(delivery_index))
             {
                 Log.d(TAG,"remove delivery from guy: " + index_string + " deliv: " + delivery_index);
-                deliveries.remove(d);
-                return;
+                to_remove = d;
             }
+        }
+        if (to_remove != null)
+        {
+            deliveries.remove(to_remove);
+            to_remove = null;
+            return;
         }
     }
 
-    public Boolean getIs_active() {
-        return is_active;
+    public void removeDestination(String delivery_index)
+    {
+        Destination to_remove = null;
+        for (Destination d : destinations)
+        {
+            if (to_remove != null)
+            {
+                destinations.remove(to_remove);
+                to_remove = null;
+            }
+          //  Log.d(TAG,"iter indx: "+ d.getIndexString() + " wanted: " +delivery_index);
+            if (d.getIndex_string().equals(delivery_index))
+            {
+                Log.d(TAG,"remove removeDestination from guy: " + index_string + " deliv: " + delivery_index);
+                to_remove = d;
+            }
+        }
+        if (to_remove != null)
+        {
+            destinations.remove(to_remove);
+            to_remove = null;
+        }
     }
 
-    public void setIs_active(Boolean is_active) {
-        this.is_active = is_active;
-    }
 
-    public String getIndex_string() {
-        return index_string;
-    }
-
-    public void setIndex_string(String index_string) {
-        this.index_string = index_string;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public String getTimeBeFree() {
         return timeBeFree;
@@ -152,11 +179,5 @@ public class DeliveryGuys {
         this.longtitude = longtitude;
     }
 
-    public String getPicture() {
-        return picture;
-    }
 
-    public void setPicture(String picture) {
-        this.picture = picture;
-    }
 }

@@ -9,10 +9,12 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,9 +22,11 @@ import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
@@ -30,6 +34,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import Objects.DeliveryGuysShift;
 
@@ -50,9 +56,10 @@ public class DeliveryGuysShiftActivity extends AppCompatActivity {
     public static final int FRIDAY  = 5;
     public static final int SATURDAY  = 6;
     public static final int NAME  = 7;
+    Button send_to_guy_button;
 
 
-
+    Button send;
     private  Toolbar toolbar;
     TableLayout main_table;
     TableLayout second_table;
@@ -80,6 +87,10 @@ public class DeliveryGuysShiftActivity extends AppCompatActivity {
         set_missing_table();
         get_shift_query();
 
+         send = findViewById(R.id.send);
+        send_to_guy_button = findViewById(R.id.send_to_guy);
+
+
 
 
 
@@ -89,6 +100,7 @@ public class DeliveryGuysShiftActivity extends AppCompatActivity {
         Log.d(TAG,"after intent");
 
     }
+
     public void set_missing_table()
     {
         missing_Array_textView[0][0] = second_table.findViewById(R.id.sunday_morning_missing);
@@ -387,7 +399,7 @@ public class DeliveryGuysShiftActivity extends AppCompatActivity {
 
 
     }
-    public void set_row(TableRow row,DeliveryGuysShift shift)
+    public void set_row(TableRow row,DeliveryGuysShift shift,final int index_shift)
     {
         Log.d(TAG,"set_row +row: " +row + " shift: " +shift.getName() );
         ArrayList<String> options =  new ArrayList<>();
@@ -609,15 +621,48 @@ public class DeliveryGuysShiftActivity extends AppCompatActivity {
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+              //  Log.d(TAG,"td: " + td.values());
                 for(DataSnapshot ds : dataSnapshot.getChildren())
                 {
-                    DeliveryGuysShift temp = new DeliveryGuysShift(ds.getValue(DeliveryGuysShift.class));
-                    Log.d(TAG,"temp " + temp.getName() + " date: " +temp.getDate());
-                    if (temp.getDate().equals(sunday)) {
-                        array_shift_toDB.add(temp);
-                      //  array_shift_original.add(temp);
-                        Log.d(TAG,"fff");
-                    }
+                   for (DataSnapshot ds2: ds.getChildren())
+                   {
+                       DeliveryGuysShift temp = new DeliveryGuysShift(ds2.getValue(DeliveryGuysShift.class));
+                       Log.d(TAG,"temp: " + temp + " name " + temp.getName() + " date " + temp.getDate() + " datesun " + temp.getDate_of_sunday());
+                       if (temp.getDate_of_sunday().equals(sunday)) {
+                           //get it from approved db
+                           if (temp.getIs_approved())
+                           {
+                              Query mDatabase =  FirebaseDatabase.getInstance().getReference("Delivery_Guys_Shifts_Aproved");
+                              mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                                  @Override
+                                  public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                      for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                                          for (DataSnapshot ds2 : ds.getChildren()) {
+                                              DeliveryGuysShift temp = new DeliveryGuysShift(ds2.getValue(DeliveryGuysShift.class));
+                                              Log.d(TAG, "temp: " + temp + " name " + temp.getName() + " date " + temp.getDate() + " datesun " + temp.getDate_of_sunday());
+                                              if (temp.getDate_of_sunday().equals(sunday)) {
+                                                  array_shift_toDB.add(temp);
+                                              }
+                                          }
+                                      }
+                                  }
+
+                                  @Override
+                                  public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                  }
+                              });
+                           }
+                           else
+                           {
+                               array_shift_toDB.add(temp);
+                           }
+
+                           array_shift_original.add(temp);
+                           //  array_shift_original.add(temp);
+                       }
+                   }
+
                 }
                 set_UI();
             }
@@ -762,11 +807,12 @@ public class DeliveryGuysShiftActivity extends AppCompatActivity {
     public void set_UI()
     {
         Log.d(TAG,"gg");
-        for( DeliveryGuysShift d : array_shift_toDB)
+        for( int i=0;i<array_shift_toDB.size();i++)
         {
+            DeliveryGuysShift d = array_shift_toDB.get(i);
             Log.d(TAG,"set_UI shift: " + d.getName());
             TableRow row = create_row();
-            set_row(row,d);
+            set_row(row,d,i);
             main_table.addView(row);
             updateGivenArray(d);
 
@@ -774,7 +820,48 @@ public class DeliveryGuysShiftActivity extends AppCompatActivity {
         }
         setMissing_array();
         set_given_array();
+        send_to_guy_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PopupMenu menu = new PopupMenu(DeliveryGuysShiftActivity.this, view);
+                for( DeliveryGuysShift d : array_shift_toDB)
+                {
+                    menu.getMenu().add(d.getName());
+                }
+                menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                    //    Toast.makeText(DeliveryGuysShiftActivity.this, "pressed on: " + array_shift_toDB.get(item.getItemId()), Toast.LENGTH_SHORT).show();
+                        send_shift(item.getItemId());
+                       // clicked.set
+                        return false;
+                    }
+                });
+                menu.show();
+
+            }
+        });
+        send.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                for(int i=0;i<array_shift_toDB.size();i++)
+                {
+                    send_shift(i);
+                }
+            }
+        });
 
     }
+
+    public void send_shift(int index)
+    {
+        DeliveryGuysShift clicked = array_shift_toDB.get(index);
+        clicked.setIs_approved(true);
+        DatabaseReference mDatabase =  FirebaseDatabase.getInstance().getReference("Delivery_Guys_Shifts_Aproved");
+        mDatabase.child(clicked.getIndexString()).child(clicked.getDate_of_sunday()).setValue(clicked);
+
+    }
+
+
 
 }

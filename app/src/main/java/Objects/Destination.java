@@ -1,5 +1,7 @@
 package Objects;
 
+import java.util.ArrayList;
+
 public class Destination {
     private String adressTo;
     private String adressFrom;
@@ -10,11 +12,16 @@ public class Destination {
     private String index_string = "";
     private String name_costumer = "";
     private String business_name = "";
+    private String deliv_guy_index = "";
+    private String delivery_index = "";
+    private Boolean is_merged = false;
+    private ArrayList<String> merged_indeces = new ArrayList<>();
     private double latitude;
     private double longitude;
     private static long index_static = 0;
     private long index = 0;
 
+    public Destination(){}
 
     public Destination(String adressTo, String adressFrom, String timeInserted, String timeTaken, String timeDeliver, Boolean is_costumer,String index_string,
                        double lati,double longi ) {
@@ -43,6 +50,10 @@ public class Destination {
         this.business_name = d.getBusiness_name();
         this.latitude = d.getLatitude();
         this.longitude = d.getLongitude();
+        this.deliv_guy_index = d.getDeliv_guy_index();
+        this.merged_indeces = d.getMerged_indeces();
+        this.delivery_index = d.getDelivery_index();
+        this.is_merged = d.getIs_merged();
     }
 
     public Destination(Delivery d,Boolean to_costumer)
@@ -66,8 +77,51 @@ public class Destination {
             this.longitude = d.getSource_cord_long();
             this.latitude = d.getSource_cord_lat();
         }
+        this.deliv_guy_index = d.getDelivery_guy_index_assigned();
+        this.delivery_index = d.getIndexString();
         this.index = index_static;
         this.index_static ++;
+    }
+
+    public String getDeliv_guy_index() {
+        return deliv_guy_index;
+    }
+
+    public void setDeliv_guy_index(String deliv_guy_index) {
+        this.deliv_guy_index = deliv_guy_index;
+    }
+
+    public String getDelivery_index() {
+        return delivery_index;
+    }
+
+    public void setDelivery_index(String delivery_index) {
+        this.delivery_index = delivery_index;
+    }
+
+    public Boolean getIs_merged() {
+        return is_merged;
+    }
+
+    public void setIs_merged(Boolean is_merged) {
+        this.is_merged = is_merged;
+    }
+
+    public ArrayList<String> getMerged_indeces() {
+        return merged_indeces;
+    }
+
+    public void setMerged_indeces(ArrayList<String> merged_indeces) {
+        this.merged_indeces = merged_indeces;
+    }
+
+    public void addMerged(String index)
+    {
+        merged_indeces.add(index);
+    }
+    public void removeMerged(String index)
+    {
+        merged_indeces.remove(index);
     }
 
     public static long getIndexStatic() {

@@ -1,65 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+
     android:layout_width="match_parent"
-    tools:context="LoginActivity"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/food_delivery_image"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="230dp"
-        android:layout_height="51dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/login_screen_show"
-        android:textColor="#111"
-        android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:background="@drawable/white_trans"
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/button_sign_up"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/login_button"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edittext_password"
-        app:layout_constraintVertical_bias="0.129" />
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
 
-    <EditText
-        android:id="@+id/edittext_password"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:ems="10"
-        android:hint="@string/enter_password"
-        android:inputType="textPassword"
-        android:gravity="right"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edittext_email" />
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
 
-    <EditText
-        android:id="@+id/edittext_email"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="@string/enter_email"
-        android:layout_marginTop="48dp"
-        android:ems="10"
-        android:gravity="right"
-        android:inputType="textEmailAddress"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
-</android.support.constraint.ConstraintLayout>
+            <Button
+                android:id="@+id/button_sign_up"
+                style="@style/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_weight="0.01"
+                android:text="הרשם" />
+
+        </LinearLayout>
+
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/login" />
+
+        <TextView
+            android:id="@+id/textView"
+            style="@style/text_V_style"
+            android:text="ברוך הבא לjetpack" />
+
+        <EditText
+            android:id="@+id/edittext_email"
+            style="@style/editTextStyle"
+            android:drawableLeft="@drawable/ic_person"
+            android:hint="דוא''ל"
+            android:gravity="left|center_vertical"
+            android:inputType="textEmailAddress" />
+
+        <EditText
+            android:id="@+id/edittext_pass"
+            style="@style/editTextStyle"
+            android:drawableLeft="@drawable/pass"
+            android:hint="סיסמא"
+            android:gravity="left|center_vertical"
+            android:inputType="textPassword" />
+        <EditText
+            android:id="@+id/edittext_name"
+            style="@style/editTextStyle"
+            android:drawableLeft="@drawable/pen2"
+            android:hint="    שם משתמש    "
+            android:visibility="gone"
+            android:gravity="left|center_vertical"
+            android:inputType="text" />
+
+        <Button
+            android:id="@+id/button_sign_in"
+            style="@style/buttonStyle"
+            android:text="הכנס" />
+
+        <TextView
+            android:id="@+id/textView2"
+            style="@style/text_second_style"
+            android:text="Forgot Password?" />
+    </LinearLayout>
+</RelativeLayout>

@@ -31,21 +31,23 @@ public class DragController implements RecyclerView.OnItemTouchListener {
     private boolean isFirst = true;
     private long draggingId = -1;
     private float startY = 0f;
+    View first;
     private Rect startBounds = null;
 
     public DragController(final RecyclerView recyclerView, ImageView overlay, recycleAdapterConst.AdapterList kind) {
         this.recyclerView = recyclerView;
         this.overlay = overlay;
         this.kind = kind;
-        GestureDetector.SimpleOnGestureListener longClickGestureListener = new GestureDetector.SimpleOnGestureListener() {
-            @Override
-            public void onLongPress(MotionEvent e) {
-                Toast.makeText(recyclerView.getContext(),"fffffffffff", Toast.LENGTH_SHORT).show();
-                super.onLongPress(e);
-                isDragging = true;
-                dragStart(e.getX(), e.getY());
-            }
-        };
+//        GestureDetector.SimpleOnGestureListener longClickGestureListener = new GestureDetector.SimpleOnGestureListener() {
+//            @Override
+//            public void onLongPress(MotionEvent e) {
+//                Toast.makeText(recyclerView.getContext(),"fffffffffff", Toast.LENGTH_SHORT).show();
+//                super.onLongPress(e);
+//                isDragging = true;
+//                dragStart(e.getX(), e.getY());
+//            }
+//        };
+        GestureDetector.SimpleOnGestureListener longClickGestureListener = new MyGestureListener();
         this.gestureDetector = new GestureDetectorCompat(recyclerView.getContext(), longClickGestureListener);
     }
 
@@ -54,12 +56,15 @@ public class DragController implements RecyclerView.OnItemTouchListener {
         if (isDragging) {
             return true;
         }
+     //   Log.d(TAG,"onInterceptTouchEvent");
         gestureDetector.onTouchEvent(e);
+
         return false;
     }
 
     @Override
     public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+     //   Log.d(TAG,"onTouch");
         int y = (int) e.getY();
         if (e.getAction() == MotionEvent.ACTION_UP) {
             dragEnd();
@@ -76,7 +81,7 @@ public class DragController implements RecyclerView.OnItemTouchListener {
 
     private void dragStart(float x, float y) {
         draggingView = recyclerView.findChildViewUnder(x, y);
-        View first = recyclerView.getChildAt(0);
+         first = recyclerView.getChildAt(0);
         isFirst = draggingView == first;
         startY = y - draggingView.getTop();
         paintViewToOverlay(draggingView);
@@ -89,14 +94,22 @@ public class DragController implements RecyclerView.OnItemTouchListener {
     private void drag(int y) {
         overlay.setTranslationY(y - startY);
         if (!isInPreviousBounds()) {
+            if (y<0)
+            {
+                y=0;
+            }
             View view = recyclerView.findChildViewUnder(0, y);
-            if (recyclerView.getChildPosition(view) != 0 && view != null) {
+//            Log.d(TAG,"first: " + first.getY() + "curr y:" + y + "view: "  +view +"  view second:" + (recyclerView.findChildViewUnder(0, 1) == first));
+//            Log.d(TAG,"childpos: " + recyclerView.getChildPosition(view)  + " sec: " + recyclerView.getChildAdapterPosition(view));
+            if (/**recyclerView.getChildPosition(view) != 0 && **/ view != null) {
                 if (kind.equals(recycleAdapterConst.AdapterList.DELIVERIES))
                 {
+                 //   Log.d(TAG,"1290");
                     swapViewsDeliveries(view);
                 }
                 else if (kind.equals(recycleAdapterConst.AdapterList.ROUTES))
                 {
+                 //   Log.d(TAG,"1295");
                     swapViewsRoutes(view);
                 }
                 else
@@ -105,6 +118,58 @@ public class DragController implements RecyclerView.OnItemTouchListener {
                 }
 
             }
+
+        }
+
+    }
+    class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
+
+        @Override
+        public boolean onDown(MotionEvent event) {
+           // Log.d(TAG,"onDown: ");
+
+            // don't return false here or else none of the other
+            // gestures will work
+            return true;
+        }
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+          //  Log.i(TAG, "onSingleTapConfirmed: ");
+            return true;
+        }
+
+        @Override
+        public void onLongPress(MotionEvent e) {
+          //  Log.i(TAG, "onLongPress: ");
+            return ;
+//            Toast.makeText(recyclerView.getContext(),"fffffffffff", Toast.LENGTH_SHORT).show();
+//            super.onLongPress(e);
+//            isDragging = true;
+//            dragStart(e.getX(), e.getY());
+        }
+
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+           // Log.i(TAG, "onDoubleTap: ");
+            return true;
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2,
+                                float distanceX, float distanceY) {
+          //  Log.i(TAG, "onScroll: ");
+            super.onLongPress(e1);
+            isDragging = true;
+            dragStart(e1.getX(), e1.getY());
+            return true;
+        }
+
+        @Override
+        public boolean onFling(MotionEvent event1, MotionEvent event2,
+                               float velocityX, float velocityY) {
+           // Log.d(TAG, "onFling: ");
+            return true;
         }
     }
 
@@ -154,6 +219,7 @@ public class DragController implements RecyclerView.OnItemTouchListener {
     public boolean isInPreviousBounds() {
         float overlayTop = overlay.getTop() + overlay.getTranslationY();
         float overlayBottom = overlay.getBottom() + overlay.getTranslationY();
-        return overlayTop < startBounds.bottom && overlayBottom > startBounds.top;
+        Boolean out = overlayTop < startBounds.bottom && overlayBottom > startBounds.top;
+        return out;
     }
 }
